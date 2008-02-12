@@ -1,0 +1,233 @@
+/*
+	D-System 'SOUND UTILITY'
+
+		'util_snd.d'
+
+	2003/12/02 jumpei isshiki
+*/
+
+private	import	SDL;
+private	import	SDL_mixer;
+
+enum{
+	SND_RATE = 44100,
+	SND_CHANNEL = 2,
+	SND_BUFFER = 2048,
+}
+
+int	vol_se = 100;
+int	vol_music = 75;
+
+private	bool			sound_use = false;
+private	Mix_Music*[]	music;
+private	Mix_Chunk*[]	chunk;
+private	int[]			chunkChannel;
+
+int		initSND(int mch, int sch)
+{
+	if(mch < 1 || sch < 1)
+	{
+		return	0;
+	}
+	if(SDL_InitSubSystem(SDL_INIT_AUDIO) < 0){
+		return	0;
+    }
+
+    int		audio_rate;
+    Uint16	audio_format;
+    int		audio_channels;
+    int		audio_buffers;
+
+	audio_rate = SND_RATE;
+	audio_format = AUDIO_S16;
+	audio_channels = SND_CHANNEL;
+	audio_buffers = SND_BUFFER;
+	if(Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers) < 0){
+		sound_use = false;
+	}else{
+		sound_use = true;
+	}
+	Mix_QuerySpec(&audio_rate, &audio_format, &audio_channels);
+
+	music.length = mch;
+	for(int i = 0; i < music.length; i++){
+		music[i] = null;
+	}
+	chunk.length = sch;
+	chunkChannel.length = sch;
+	for(int i = 0; i < chunk.length; i++){
+		chunk[i] = null;
+		chunkChannel[i] = -1;
+	}
+
+	return	1;
+}
+
+
+void	closeSND()
+{
+	if(!sound_use){
+		return;
+	}
+	freeSND();
+	Mix_CloseAudio();
+
+	return;
+}
+
+
+void	loadSNDmusic(char[] name, int ch)
+{
+	if(!sound_use){
+		return;
+	}
+
+	char[] fileName = name ~ "\0";
+
+	music[ch] = Mix_LoadMUS(cast(char*)fileName);
+	if(!music[ch]){
+		sound_use = false;
+	}
+
+	return;
+}
+
+
+void	loadSNDse(char[] name, int bank, int ch)
+{
+	if(ch < 0){
+		return;
+	}
+	if(!sound_use){
+		return;
+	}
+
+	char[] fileName = name ~ "\0";
+
+	chunk[bank] = Mix_LoadWAV(cast(char*)fileName);
+	if(!chunk[bank]){
+		sound_use = false;
+	}
+	chunkChannel[bank] = ch;
+
+	return;
+}
+
+
+void	freeSND()
+{
+	for(int i = 0; i < music.length; i++){
+	    if(music[i]){
+			stopSNDmusic();
+			Mix_FreeMusic(music[i]);
+		}
+		music[i] = null;
+	}
+	for(int i = 0; i < chunk.length; i++){
+		if(chunk[i]){
+			stopSNDse(chunkChannel[i]);
+			Mix_FreeChunk(chunk[i]);
+		}
+	}
+
+	return;
+}
+
+
+void	playSNDmusic(int ch)
+{
+	if(ch < 0 || !music[ch]){
+		return;
+	}
+	if(!sound_use){
+		return;
+	}
+    Mix_PlayMusic(music[ch], -1);
+
+	return;
+}
+
+
+void	stopSNDmusic()
+{
+	if(!sound_use){
+		return;
+	}
+    if(Mix_PlayingMusic()){
+		Mix_HaltMusic();
+	}
+
+	return;
+}
+
+
+void	playSNDse(int bank)
+{
+	if(bank < 0 || chunkChannel[bank] == -1 || !chunk[bank]){
+		return;
+	}
+	if(!sound_use){
+		return;
+	}
+    Mix_PlayChannel(chunkChannel[bank], chunk[bank], 0);
+
+	return;
+}
+
+
+void	stopSNDse(int bank)
+{
+	if(bank < 0 || chunkChannel[bank] == -1){
+		return;
+	}
+	if(!sound_use){
+		return;
+	}
+    Mix_HaltChannel(chunkChannel[bank]);
+
+	return;
+}
+
+
+int		checkSNDse(int ch)
+{
+	if(ch < 0){
+		return	0;
+	}
+	if(!sound_use){
+		return	0;
+	}
+
+	return	Mix_Playing(ch);
+}
+
+
+void	stopSNDall()
+{
+	for(int i = 0; i < music.length; i++){
+	    if(music[i]){
+			stopSNDmusic();
+		}
+	}
+	for(int i = 0; i < chunkChannel.length; i++){
+		stopSNDse(i);
+	}
+
+	return;
+}
+
+void	volumeSNDse(int vol)
+{
+	int master = vol * 128 / 100;
+	for(int i = 0; i < chunk.length; i++){
+		if(chunk[i]){
+			Mix_VolumeChunk(chunk[i], master);
+		}
+	}
+}
+
+void	volumeSNDmusic(int vol)
+{
+	int master = vol * 128 / 100;
+	Mix_VolumeMusic(master);
+}
