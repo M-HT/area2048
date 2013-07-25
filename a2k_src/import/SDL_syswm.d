@@ -22,7 +22,7 @@
 
 /* Include file for SDL custom system window manager hooks */
 
-public import SDL_Version;
+import SDL_Version;
 
 extern(C):
 

@@ -7,7 +7,7 @@
 */
 
 private	import	std.math;
-private	import	std.random;
+private	import	main;
 private	import	std.string;
 private	import	SDL;
 private	import	opengl;
@@ -53,16 +53,16 @@ void	TSKparticle01(int id)
 			for(int i = 0; i < 3; i++){
 				switch(i){
 					case	0:
-							tpos[X] = -((rand() % 4096) / 1024.0f + 1.0f);
-							tpos[Y] = +((rand() % 4096) / 1024.0f + 1.0f);
+							tpos[X] = -((Rand() % 4096) / 1024.0f + 1.0f);
+							tpos[Y] = +((Rand() % 4096) / 1024.0f + 1.0f);
 							break;
 					case	1:
-							tpos[X] =  ((rand() % 2048) / 1024.0f - 1.0f);
-							tpos[Y] = -((rand() % 4096) / 1024.0f + 1.0f);
+							tpos[X] =  ((Rand() % 2048) / 1024.0f - 1.0f);
+							tpos[Y] = -((Rand() % 4096) / 1024.0f + 1.0f);
 							break;
 					case	2:
-							tpos[X] = +((rand() % 4096) / 1024.0f + 1.0f);
-							tpos[Y] = +((rand() % 4096) / 1024.0f + 1.0f);
+							tpos[X] = +((Rand() % 4096) / 1024.0f + 1.0f);
+							tpos[Y] = +((Rand() % 4096) / 1024.0f + 1.0f);
 							break;
 					default:
 							break;
@@ -74,8 +74,8 @@ void	TSKparticle01(int id)
 				tpos[Y] = fabs(tpos[Y]);
 				TskBuf[id].body_ang[i][W] = sqrt(pow(tpos[X],2.0) + pow(tpos[Y],2.0));
 			}
-			TskBuf[id].tx = (rand() % 256000) / 1000.0f - 128.0f;
-			TskBuf[id].ty = (rand() % 256000) / 1000.0f - 128.0f;
+			TskBuf[id].tx = (Rand() % 256000) / 1000.0f - 128.0f;
+			TskBuf[id].ty = (Rand() % 256000) / 1000.0f - 128.0f;
 			TskBuf[id].tx += TskBuf[id].px;
 			TskBuf[id].ty += TskBuf[id].py;
 			TskBuf[id].wait = 60;
@@ -165,16 +165,16 @@ void	TSKparticle02(int id)
 			for(int i = 0; i < 3; i++){
 				switch(i){
 					case	0:
-							tpos[X] = -((rand() % 12288) / 1024.0f + 3.0f);
-							tpos[Y] = +((rand() % 12288) / 1024.0f + 3.0f);
+							tpos[X] = -((Rand() % 12288) / 1024.0f + 3.0f);
+							tpos[Y] = +((Rand() % 12288) / 1024.0f + 3.0f);
 							break;
 					case	1:
-							tpos[X] =  ((rand() %  6144) / 1024.0f - 3.0f);
-							tpos[Y] = -((rand() % 12288) / 1024.0f + 3.0f);
+							tpos[X] =  ((Rand() %  6144) / 1024.0f - 3.0f);
+							tpos[Y] = -((Rand() % 12288) / 1024.0f + 3.0f);
 							break;
 					case	2:
-							tpos[X] = +((rand() % 12288) / 1024.0f + 3.0f);
-							tpos[Y] = +((rand() % 12288) / 1024.0f + 3.0f);
+							tpos[X] = +((Rand() % 12288) / 1024.0f + 3.0f);
+							tpos[Y] = +((Rand() % 12288) / 1024.0f + 3.0f);
 							break;
 					default:
 							break;
@@ -186,8 +186,8 @@ void	TSKparticle02(int id)
 				tpos[Y] = fabs(tpos[Y]);
 				TskBuf[id].body_ang[i][W] = sqrt(pow(tpos[X],2.0) + pow(tpos[Y],2.0));
 			}
-			TskBuf[id].tx = (rand() % 512000) / 1000.0f - 256.0f;
-			TskBuf[id].ty = (rand() % 512000) / 1000.0f - 256.0f;
+			TskBuf[id].tx = (Rand() % 512000) / 1000.0f - 256.0f;
+			TskBuf[id].ty = (Rand() % 512000) / 1000.0f - 256.0f;
 			TskBuf[id].tx += TskBuf[id].px;
 			TskBuf[id].ty += TskBuf[id].py;
 			TskBuf[id].wait = 60;
@@ -279,13 +279,13 @@ void	TSKBrokenBody(int id)
 			TskBuf[id].fp_draw = &TSKBrokenBodyDraw;
 			TskBuf[id].fp_exit = &TSKBrokenBodyExit;
 			TskBuf[id].alpha = 1.0f;
-			TskBuf[id].tx = (rand() % 256000) / 1000.0f - 128.0f;
-			TskBuf[id].ty = (rand() % 256000) / 1000.0f - 128.0f;
+			TskBuf[id].tx = (Rand() % 256000) / 1000.0f - 128.0f;
+			TskBuf[id].ty = (Rand() % 256000) / 1000.0f - 128.0f;
 			TskBuf[id].tx *= 2.0f;
 			TskBuf[id].ty *= 2.0f;
 			TskBuf[id].tx += TskBuf[id].px;
 			TskBuf[id].ty += TskBuf[id].py;
-			TskBuf[id].rot_add = (rand % 30) - 15;
+			TskBuf[id].rot_add = (Rand() % 30) - 15;
 			if(!(TskBuf[id].rot_add - 15))		TskBuf[id].rot_add = -1;
 			else if(!(TskBuf[id].rot_add + 15)) TskBuf[id].rot_add = +1;
 			if(TskBuf[id].rot_add < 0) TskBuf[id].rot_add = PI / (TskBuf[id].rot_add - 15);
@@ -410,13 +410,13 @@ void	TSKBrokenLine(int id)
 			TskBuf[id].fp_draw = &TSKBrokenLineDraw;
 			TskBuf[id].fp_exit = &TSKBrokenLineExit;
 			TskBuf[id].alpha = 1.0f;
-			TskBuf[id].tx = (rand() % 256000) / 1000.0f - 128.0f;
-			TskBuf[id].ty = (rand() % 256000) / 1000.0f - 128.0f;
+			TskBuf[id].tx = (Rand() % 256000) / 1000.0f - 128.0f;
+			TskBuf[id].ty = (Rand() % 256000) / 1000.0f - 128.0f;
 			TskBuf[id].tx *= 2.0f;
 			TskBuf[id].ty *= 2.0f;
 			TskBuf[id].tx += TskBuf[id].px;
 			TskBuf[id].ty += TskBuf[id].py;
-			TskBuf[id].rot_add = (rand % 30) - 15;
+			TskBuf[id].rot_add = (Rand() % 30) - 15;
 			if(!(TskBuf[id].rot_add - 15))		TskBuf[id].rot_add = -1;
 			else if(!(TskBuf[id].rot_add + 15)) TskBuf[id].rot_add = +1;
 			if(TskBuf[id].rot_add < 0) TskBuf[id].rot_add = PI / (TskBuf[id].rot_add - 15);

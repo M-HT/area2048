@@ -7,6 +7,7 @@
 */
 
 private	import	std.random;
+private	import	core.stdc.stdio;
 private	import	util_sdl;
 private	import	util_snd;
 private	import	util_pad;
@@ -223,7 +224,7 @@ void	TSKatrractCtrl(int id)
 {
 	switch(TskBuf[id].step){
 		case	0:
-			area_num = rand() % AREA_05;
+			area_num = Rand() % AREA_05;
 			printf("area %d\n",area_num);
 			scene_num = SCENE_01;
 			stg_bgm = -1;
@@ -293,7 +294,7 @@ void	SEQinit()
 	enemy_cnt = 0;
 	enemy_max = 0;
 }
-			
+
 int		SEQexec(int seq_pnt)
 {
 	int	eid;
@@ -502,6 +503,8 @@ int		SEQexec(int seq_pnt)
 			case	SEQ_END:
 				seq_flag = 1;
 				seq_pnt = -1;
+				break;
+			default:
 				break;
 		}
 	}

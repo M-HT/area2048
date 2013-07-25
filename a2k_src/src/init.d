@@ -95,7 +95,7 @@ void	configINIT()
 	high_normal = 0;
 	high_hard = 0;
 
-	auto File fd = new File;
+	scope std.stream.File fd = new std.stream.File;
 
 	try {
 		fd.open("score.dat");
@@ -152,7 +152,7 @@ void	configINIT()
 
 void	configSAVE()
 {
-	auto File fd = new File;
+	scope std.stream.File fd = new std.stream.File;
     fd.create("score.dat");
 	fd.write(high_easy);
 	fd.write(high_normal);

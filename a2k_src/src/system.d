@@ -10,6 +10,7 @@ private	import	std.stdio;
 private	import	std.math;
 private	import	std.random;
 private	import	std.string;
+private	import	std.conv;
 private	import	SDL;
 private	import	opengl;
 private	import	util_sdl;
@@ -62,42 +63,42 @@ void	TSKsystemDraw(int id)
 	/* 文字情報描画 */
 	glBegin(GL_QUADS);
 	glColor3f(1.0f,1.0f,1.0f);
-	str_buf  = "SCORE ";
-	str_buf ~= toString(score);
+	str_buf  = "SCORE ".dup;
+	str_buf ~= to!string(score);
 	drawASCII(str_buf, -(SCREEN_S / 2) + 8, +(SCREEN_S / 2) - 8 - 12 * 0, 0.50f);
-	str_buf  = "L:";
-	str_buf ~= toString(left);
+	str_buf  = "L:".dup;
+	str_buf ~= to!string(left);
 	drawASCII(str_buf, -(SCREEN_S / 2) + 8, +(SCREEN_S / 2) - 8 - 12 * 1, 0.50f);
 	if(BombTST()) glColor3f(1.0f,1.0f,1.0f);
 	else		  glColor3f(0.5f,0.5f,0.5f);
-	str_buf  = "W:";
-	str_buf ~= toString(bomb_lv);
+	str_buf  = "W:".dup;
+	str_buf ~= to!string(bomb_lv);
 	drawASCII(str_buf, -(SCREEN_S / 2) + 8 + (getWidthASCII("     ",0.5f)), +(SCREEN_S / 2) - 8 - 12 * 1, 0.50f);
 	glColor3f(1.0f,1.0f,1.0f);
-	str_buf  = "BONUS ";
-	str_buf ~= toString(bomb_bonus);
+	str_buf  = "BONUS ".dup;
+	str_buf ~= to!string(bomb_bonus);
 	drawASCII(str_buf, -(SCREEN_S / 2) + 8, +(SCREEN_S / 2) - 8 - 12 * 2, 0.50f);
 /*
-	str_buf  = "TASK ";
-	str_buf ~= toString(TskCnt);
+	str_buf  = "TASK ".dup;
+	str_buf ~= to!string(TskCnt);
 	drawASCII(str_buf, -(SCREEN_S / 2) + 8, +(SCREEN_S / 2) - 8 - 12 * 3, 0.50f);
 */
-	str_buf  = "ENEMY ";
+	str_buf  = "ENEMY ".dup;
 	if(enemy_stg < 10) str_buf ~= "0";
-	str_buf ~= toString(enemy_stg);
+	str_buf ~= to!string(enemy_stg);
 	drawASCII(str_buf, -(SCREEN_S / 2) + 8, -(SCREEN_S / 2) + 20, 0.50f);
 	tmin  = time_left / ONE_MIN;
 	tsec  = time_left / ONE_SEC % ONE_SEC;
 	tmsec = ((time_left % ONE_SEC) * 100 / ONE_SEC);
-	str_buf  = "TIME ";
+	str_buf  = "TIME ".dup;
 	if(tmin < 10) str_buf ~= " ";
-	str_buf ~= toString(tmin);
+	str_buf ~= to!string(tmin);
 	str_buf ~= ":";
 	if(tsec < 10) str_buf ~= "0";
-	str_buf ~= toString(tsec);
+	str_buf ~= to!string(tsec);
 	str_buf ~= ":";
 	if(tmsec < 10) str_buf ~= "0";
-	str_buf ~= toString(tmsec);
+	str_buf ~= to!string(tmsec);
 	drawASCII(str_buf, -(SCREEN_S / 2) + 8 + (getWidthASCII("         ",0.5f)), -(SCREEN_S / 2) + 20, 0.50f);
 	glEnd();
 
@@ -319,22 +320,22 @@ void	TSKstgStartMsgDraw(int id)
 	if(g_step != GSTEP_DEMO){
 		glColor4f(1.0f,1.0f,1.0f,TskBuf[id].nx);
 		glBegin(GL_QUADS);
-		str_buf  = "AREA ";
-		str_buf ~= toString(area_num + 1);
+		str_buf  = "AREA ".dup;
+		str_buf ~= to!string(area_num + 1);
 		px = getWidthASCII(str_buf, 0.5f);
 		px /= 2.0f;
 		px *= -1.0f;
 		px  = ceil(px);
 		drawASCII(str_buf, px, +10.0f, 0.5f);
-		str_buf  = "SCENE ";
-		str_buf ~= toString(scene_num + 1);
+		str_buf  = "SCENE ".dup;
+		str_buf ~= to!string(scene_num + 1);
 		px = getWidthASCII(str_buf, 0.5f);
 		px /= 2.0f;
 		px *= -1.0f;
 		px  = ceil(px);
 		drawASCII(str_buf, px,  +0.0f, 0.5f);
 		if(scene_num != SCENE_10){
-			str_buf  = toString(enemy_stg);
+			str_buf  = to!string(enemy_stg).dup;
 			str_buf ~= " ENEMIES";
 			px = getWidthASCII(str_buf, 0.5f);
 			px /= 2.0f;
@@ -345,7 +346,7 @@ void	TSKstgStartMsgDraw(int id)
 	}else{
 		glColor4f(1.0f,1.0f,1.0f,1.0f);
 		glBegin(GL_QUADS);
-		str_buf = "DEMO PLAY";
+		str_buf = "DEMO PLAY".dup;
 		px = getWidthASCII(str_buf, 0.5f);
 		px /= 2.0f;
 		px *= -1.0f;
@@ -390,16 +391,16 @@ void	TSKstgStartMsgEffectDraw(int id)
 	if(g_step != GSTEP_DEMO){
 		glColor4f(1.0f,1.0f,1.0f,TskBuf[id].ny);
 		glBegin(GL_QUADS);
-		str_buf  = "AREA ";
-		str_buf ~= toString(area_num + 1);
+		str_buf  = "AREA ".dup;
+		str_buf ~= to!string(area_num + 1);
 		pos[X] = getWidthASCII(str_buf, TskBuf[id].sx);
 		pos[X] /= 2.0f;
 		pos[X] *= -1.0f;
 		pos[X]  = ceil(pos[X]);
 		pos[Y]  = 10.0f + ASC_SIZE * (TskBuf[id].wait / 15.0f);
 		drawASCII(str_buf, pos[X], pos[Y], TskBuf[id].sx);
-		str_buf  = "SCENE ";
-		str_buf ~= toString(scene_num + 1);
+		str_buf  = "SCENE ".dup;
+		str_buf ~= to!string(scene_num + 1);
 		pos[X] = getWidthASCII(str_buf, TskBuf[id].sx);
 		pos[X] /= 2.0f;
 		pos[X] *= -1.0f;
@@ -407,7 +408,7 @@ void	TSKstgStartMsgEffectDraw(int id)
 		pos[Y]  = 0.0f + ASC_SIZE * (TskBuf[id].wait / 15.0f);
 		drawASCII(str_buf, pos[X], pos[Y], TskBuf[id].sx);
 		if(scene_num != SCENE_10){
-			str_buf  = toString(enemy_stg);
+			str_buf  = to!string(enemy_stg).dup;
 			str_buf ~= " ENEMIES";
 			pos[X] = getWidthASCII(str_buf, TskBuf[id].sx);
 			pos[X] /= 2.0f;
@@ -496,8 +497,8 @@ void	TSKstgClearMsgDraw(int id)
 
 	glColor4f(1.0f,1.0f,1.0f,TskBuf[id].nx);
 	glBegin(GL_QUADS);
-	if(area_num != 5 && scene_num != SCENE_10) str_buf  = "SCENE CLEAR";
-	else									   str_buf  = "MISSION COMPLETE";
+	if(area_num != 5 && scene_num != SCENE_10) str_buf  = "SCENE CLEAR".dup;
+	else									   str_buf  = "MISSION COMPLETE".dup;
 	px = getWidthASCII(str_buf, 0.5f);
 	px /= 2.0f;
 	px *= -1.0f;
@@ -507,15 +508,15 @@ void	TSKstgClearMsgDraw(int id)
 	tmin  = wrk1_time / ONE_MIN;
 	tsec  = wrk1_time / ONE_SEC % ONE_SEC;
 	tmsec = ((wrk1_time % ONE_SEC) * 100 / ONE_SEC);
-	str_buf  = "CLEAR TIME ";
+	str_buf  = "CLEAR TIME ".dup;
 	if(tmin < 10) str_buf ~= " ";
-	str_buf ~= toString(tmin);
+	str_buf ~= to!string(tmin);
 	str_buf ~= ":";
 	if(tsec < 10) str_buf ~= "0";
-	str_buf ~= toString(tsec);
+	str_buf ~= to!string(tsec);
 	str_buf ~= ":";
 	if(tmsec < 10) str_buf ~= "0";
-	str_buf ~= toString(tmsec);
+	str_buf ~= to!string(tmsec);
 	px = getWidthASCII(str_buf, 0.5f);
 	px /= 2.0f;
 	px *= -1.0f;
@@ -526,15 +527,15 @@ void	TSKstgClearMsgDraw(int id)
 		tmin  = wrk1_total / ONE_MIN;
 		tsec  = wrk1_total / ONE_SEC % ONE_SEC;
 		tmsec = ((wrk1_total % ONE_SEC) * 100 / ONE_SEC);
-		str_buf  = "TOTAL TIME ";
+		str_buf  = "TOTAL TIME ".dup;
 		if(tmin < 10) str_buf ~= " ";
-		str_buf ~= toString(tmin);
+		str_buf ~= to!string(tmin);
 		str_buf ~= ":";
 		if(tsec < 10) str_buf ~= "0";
-		str_buf ~= toString(tsec);
+		str_buf ~= to!string(tsec);
 		str_buf ~= ":";
 		if(tmsec < 10) str_buf ~= "0";
-		str_buf ~= toString(tmsec);
+		str_buf ~= to!string(tmsec);
 		px = getWidthASCII(str_buf, 0.5f);
 		px /= 2.0f;
 		px *= -1.0f;
@@ -542,12 +543,12 @@ void	TSKstgClearMsgDraw(int id)
 		py -= +10.0f;
 		drawASCII(str_buf, px, py, 0.5f);
 	}
-	str_buf  = "TIME BONUS ";
+	str_buf  = "TIME BONUS ".dup;
 	if(wrk1_bonus < 10000) str_buf ~= " ";
 	if(wrk1_bonus < 1000)  str_buf ~= " ";
 	if(wrk1_bonus < 100)   str_buf ~= " ";
 	if(wrk1_bonus < 10)    str_buf ~= " ";
-	str_buf ~= toString(wrk1_bonus);
+	str_buf ~= to!string(wrk1_bonus);
 	px = getWidthASCII(str_buf, 0.5f);
 	px /= 2.0f;
 	px *= -1.0f;
@@ -555,12 +556,12 @@ void	TSKstgClearMsgDraw(int id)
 	py -= +10.0f;
 	drawASCII(str_buf, px, py, 0.5f);
 	if(scene_num == SCENE_10){
-		str_buf  = "DESTROY BONUS ";
+		str_buf  = "DESTROY BONUS ".dup;
 		if(wrk1_option < 10000) str_buf ~= " ";
 		if(wrk1_option < 1000)  str_buf ~= " ";
 		if(wrk1_option < 100)   str_buf ~= " ";
 		if(wrk1_option < 10)    str_buf ~= " ";
-		str_buf ~= toString(wrk1_option);
+		str_buf ~= to!string(wrk1_option);
 		px = getWidthASCII(str_buf, 0.5f);
 		px /= 2.0f;
 		px *= -1.0f;
@@ -713,7 +714,7 @@ void	TSKgameoverDraw(int id)
 
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 	glBegin(GL_QUADS);
-	str_buf = "GAME OVER";
+	str_buf = "GAME OVER".dup;
 	px = getWidthASCII(str_buf, 0.5f);
 	px /= 2.0f;
 	px *= -1.0f;

@@ -6,7 +6,6 @@
 	2004/04/08 jumpei isshiki
 */
 
-private	import	std.random;
 private	import	util_snd;
 private	import	util_pad;
 private	import	define;
@@ -208,7 +207,7 @@ void	TSKgctrl(int id)
 			fade_g = 1.0f;
 			fade_b = 1.0f;
 			fade_a = 1.0f;
-			game_level = rand() % GLEVEL_MAX;
+			game_level = Rand() % GLEVEL_MAX;
 			switch(game_level){
 				case	GLEVEL_EASY:
 					time_left = ONE_MIN * 30;

@@ -22,8 +22,8 @@
 
 /* Include file for SDL mouse event handling */
 
-public import SDL_types;
-public import SDL_video;
+import SDL_types;
+import SDL_video;
 
 extern(C):
 

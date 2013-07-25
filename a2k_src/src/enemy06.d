@@ -7,7 +7,7 @@
 */
 
 private	import	std.math;
-private	import	std.random;
+private	import	main;
 private	import	SDL;
 private	import	opengl;
 private	import	util_sdl;
@@ -65,8 +65,8 @@ void	TSKenemy06(int id)
 	switch(TskBuf[id].step){
 		case	0:
 			TskBuf[id].tskid |= TSKID_ZAKO;
-			TskBuf[id].px = (rand() % 1536) - 768.0f;
-			TskBuf[id].py = (rand() % 1536) - 768.0f;
+			TskBuf[id].px = (Rand() % 1536) - 768.0f;
+			TskBuf[id].py = (Rand() % 1536) - 768.0f;
 			TskBuf[id].tid = ship_id;
 			TskBuf[id].fp_int = null;
 			TskBuf[id].fp_draw = &TSKenemy06Draw;
@@ -145,14 +145,14 @@ void	TSKenemy06(int id)
 			TskBuf[id].vx = TskBuf[id].px;
 			TskBuf[id].vy = TskBuf[id].py;
 			if(TskBuf[id].cnt == TskBuf[id].mov_cnt){
-				TskBuf[id].tx = (rand() % 512) + 256.0f;
-				TskBuf[id].ty = (rand() % 512) + 256.0f;
+				TskBuf[id].tx = (Rand() % 512) + 256.0f;
+				TskBuf[id].ty = (Rand() % 512) + 256.0f;
 				if(TskBuf[id].px < ship_px) TskBuf[id].tx = +TskBuf[id].tx;
 				else						TskBuf[id].tx = -TskBuf[id].tx;
 				if(TskBuf[id].py < ship_py) TskBuf[id].ty = +TskBuf[id].ty;
 				else						TskBuf[id].ty = -TskBuf[id].ty;
-				if((rand() % 100) > 97) TskBuf[id].tx = -TskBuf[id].tx;
-				if((rand() % 100) > 97) TskBuf[id].ty = -TskBuf[id].ty;
+				if((Rand() % 100) > 97) TskBuf[id].tx = -TskBuf[id].tx;
+				if((Rand() % 100) > 97) TskBuf[id].ty = -TskBuf[id].ty;
 				TskBuf[id].tx = TskBuf[id].px + TskBuf[id].tx;
 				TskBuf[id].ty = TskBuf[id].py + TskBuf[id].ty;
 				if(TskBuf[id].tx < -ENEMY_AREAMAX) TskBuf[id].tx = -ENEMY_AREAMAX + 1.0f;

@@ -35,7 +35,7 @@ void	TSKluminous(int id)
 		    glDisable(GL_CULL_FACE);
 		    glDisable(GL_DEPTH_TEST);
 		    glDisable(GL_TEXTURE_2D);
-		    glDisable(GL_COLOR_MATERIAL);    
+		    glDisable(GL_COLOR_MATERIAL);
 			//init(0.0f,640,480);
 			init(0.0f,SCREEN_X,SCREEN_Y);
 			TskBuf[id].fp_draw = &TSKluminousDraw;
@@ -73,7 +73,7 @@ static	void	makeLuminousTexture()
 	int i;
 
 	//memset(data, 0, luminousTextureWidth * luminousTextureHeight * 4 * uint.sizeof);
-	td[0..length] = 0;
+	td[0..$] = 0;
 	glGenTextures(1, &luminousTexture);
 	glBindTexture(GL_TEXTURE_2D, luminousTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, luminousTextureWidth, luminousTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);

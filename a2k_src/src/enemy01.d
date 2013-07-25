@@ -7,7 +7,7 @@
 */
 
 private	import	std.math;
-private	import	std.random;
+private	import	main;
 private	import	SDL;
 private	import	opengl;
 private	import	util_sdl;
@@ -63,8 +63,8 @@ void	TSKenemy01(int id)
 	switch(TskBuf[id].step){
 		case	0:
 			TskBuf[id].tskid |= TSKID_ZAKO;
-			TskBuf[id].px = (rand() % 1536) - 768.0f;
-			TskBuf[id].py = (rand() % 1536) - 768.0f;
+			TskBuf[id].px = (Rand() % 1536) - 768.0f;
+			TskBuf[id].py = (Rand() % 1536) - 768.0f;
 			TskBuf[id].fp_int = null;
 			TskBuf[id].fp_draw = &TSKenemy01Draw;
 			TskBuf[id].fp_exit = &TSKenemy01Exit;

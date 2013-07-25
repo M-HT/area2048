@@ -7,7 +7,7 @@
 */
 
 private	import	std.math;
-private	import	std.random;
+private	import	main;
 private	import	SDL;
 private	import	opengl;
 private	import	util_sdl;
@@ -49,8 +49,8 @@ void	TSKbg00(int id)
 			cam_pos = BASE_Z + cam_scr;
 			bg_obj.length = 512;
 			for(int i = 0; i < bg_obj.length; i++){
-				if((rand() % 100) & 0x01){
-					bg_obj[i].pos[X] = cast(float)(rand() % 4096) - 2048.0f;
+				if((Rand() % 100) & 0x01){
+					bg_obj[i].pos[X] = cast(float)(Rand() % 4096) - 2048.0f;
 					bg_obj[i].pos[Y] = 0.0f;
 					bg_obj[i].line_list.length = 2;
 					bg_obj[i].line_list[0][X] = +0.0f;
@@ -59,15 +59,15 @@ void	TSKbg00(int id)
 					bg_obj[i].line_list[1][Y] = +2048.0f;
 				}else{
 					bg_obj[i].pos[X] = 0.0f;
-					bg_obj[i].pos[Y] = cast(float)(rand() % 4096) - 2048.0f;
+					bg_obj[i].pos[Y] = cast(float)(Rand() % 4096) - 2048.0f;
 					bg_obj[i].line_list.length = 2;
 					bg_obj[i].line_list[0][X] = -2048.0f;
 					bg_obj[i].line_list[0][Y] = +0.0f;
 					bg_obj[i].line_list[1][X] = +2048.0f;
 					bg_obj[i].line_list[1][Y] = +0.0f;
 				}
-				bg_obj[i].line_list[0][Z] = 
-				bg_obj[i].line_list[1][Z] = -(cast(float)(rand() % 75)) / 100.0f + 0.25f;
+				bg_obj[i].line_list[0][Z] =
+				bg_obj[i].line_list[1][Z] = -(cast(float)(Rand() % 75)) / 100.0f + 0.25f;
 			}
 			TskBuf[id].step++;
 			break;
@@ -79,20 +79,20 @@ void	TSKbg00(int id)
 			TskBuf[fade_id].tx = 1.0f;
 			TskBuf[fade_id].wait = 60;
 			TskBuf[fade_id].step = 2;
-			TskBuf[id].px = cast(float)(rand() % 1536 - 768.0f);
-			TskBuf[id].py = cast(float)(rand() % 1536 - 768.0f);
-			if((rand() % 100) & 0x01){
+			TskBuf[id].px = cast(float)(Rand() % 1536 - 768.0f);
+			TskBuf[id].py = cast(float)(Rand() % 1536 - 768.0f);
+			if((Rand() % 100) & 0x01){
 				if(TskBuf[id].px < 0.0f){
-					TskBuf[id].tx = +(cast(float)(rand() % 768));
+					TskBuf[id].tx = +(cast(float)(Rand() % 768));
 				}else{
-					TskBuf[id].tx = -(cast(float)(rand() % 768));
+					TskBuf[id].tx = -(cast(float)(Rand() % 768));
 				}
 				TskBuf[id].ty = TskBuf[id].py;
 			}else{
 				if(TskBuf[id].py < 0.0f){
-					TskBuf[id].ty = +(cast(float)(rand() % 768));
+					TskBuf[id].ty = +(cast(float)(Rand() % 768));
 				}else{
-					TskBuf[id].ty = -(cast(float)(rand() % 768));
+					TskBuf[id].ty = -(cast(float)(Rand() % 768));
 				}
 				TskBuf[id].tx = TskBuf[id].px;
 			}
@@ -104,7 +104,7 @@ void	TSKbg00(int id)
 			cam_pos = BASE_Z + cam_scr;
 			eid = setTSK(GROUP_08,&TSKbgZoom);
 			TskBuf[eid].wait = 600;
-			TskBuf[eid].tx = BASE_Z - (cast(float)((rand() % 5000) - 2500 + 10000) / 10000.0f);
+			TskBuf[eid].tx = BASE_Z - (cast(float)((Rand() % 5000) - 2500 + 10000) / 10000.0f);
 			TskBuf[id].step++;
 			break;
 		case	2:
@@ -227,8 +227,8 @@ void	TSKbg01(int id)
 				case	0:
 					bg_obj.length = 512;
 					for(int i = 0; i < bg_obj.length; i++){
-						if((rand() % 100) & 0x01){
-							bg_obj[i].pos[X] = cast(float)(rand() % 4096) - 2048.0f;
+						if((Rand() % 100) & 0x01){
+							bg_obj[i].pos[X] = cast(float)(Rand() % 4096) - 2048.0f;
 							bg_obj[i].pos[Y] = 0.0f;
 							bg_obj[i].line_list.length = 2;
 							bg_obj[i].line_list[0][X] = +0.0f;
@@ -237,22 +237,22 @@ void	TSKbg01(int id)
 							bg_obj[i].line_list[1][Y] = +2048.0f;
 						}else{
 							bg_obj[i].pos[X] = 0.0f;
-							bg_obj[i].pos[Y] = cast(float)(rand() % 4096) - 2048.0f;
+							bg_obj[i].pos[Y] = cast(float)(Rand() % 4096) - 2048.0f;
 							bg_obj[i].line_list.length = 4;
 							bg_obj[i].line_list[0][X] = -2048.0f;
 							bg_obj[i].line_list[0][Y] = +0.0f;
 							bg_obj[i].line_list[1][X] = +2048.0f;
 							bg_obj[i].line_list[1][Y] = +0.0f;
 						}
-						bg_obj[i].line_list[0][Z] = 
-						bg_obj[i].line_list[1][Z] = -(cast(float)(rand() % 75)) / 100.0f + 0.25f;
+						bg_obj[i].line_list[0][Z] =
+						bg_obj[i].line_list[1][Z] = -(cast(float)(Rand() % 75)) / 100.0f + 0.25f;
 					}
 					break;
 				case	1:
 					bg_obj.length = 1024;
 					for(int i = 0; i < bg_obj.length; i++){
-						bg_obj[i].pos[X] = cast(float)(rand() % 2048) - 1024.0f;
-						bg_obj[i].pos[Y] = cast(float)(rand() % 2048) - 1024.0f;
+						bg_obj[i].pos[X] = cast(float)(Rand() % 2048) - 1024.0f;
+						bg_obj[i].pos[Y] = cast(float)(Rand() % 2048) - 1024.0f;
 						bg_obj[i].line_list.length = 4;
 						bg_obj[i].line_list[0][X] = -64.0f;
 						bg_obj[i].line_list[0][Y] = -64.0f;
@@ -262,17 +262,17 @@ void	TSKbg01(int id)
 						bg_obj[i].line_list[2][Y] = +64.0f;
 						bg_obj[i].line_list[3][X] = +64.0f;
 						bg_obj[i].line_list[3][Y] = -64.0f;
-						bg_obj[i].line_list[0][Z] = 
-						bg_obj[i].line_list[1][Z] = 
-						bg_obj[i].line_list[2][Z] = 
-						bg_obj[i].line_list[3][Z] = -(cast(float)(rand() % 75)) / 100.0f + 0.25f;
+						bg_obj[i].line_list[0][Z] =
+						bg_obj[i].line_list[1][Z] =
+						bg_obj[i].line_list[2][Z] =
+						bg_obj[i].line_list[3][Z] = -(cast(float)(Rand() % 75)) / 100.0f + 0.25f;
 					}
 					break;
 				case	2:
 					bg_obj.length = 768;
 					for(int i = 0; i < bg_obj.length; i++){
-						bg_obj[i].pos[X] = cast(float)(rand() % 2048) - 1024.0f;
-						bg_obj[i].pos[Y] = cast(float)(rand() % 2048) - 1024.0f;
+						bg_obj[i].pos[X] = cast(float)(Rand() % 2048) - 1024.0f;
+						bg_obj[i].pos[Y] = cast(float)(Rand() % 2048) - 1024.0f;
 						bg_obj[i].line_list.length = 4;
 						bg_obj[i].line_list[0][X] = -48.0f;
 						bg_obj[i].line_list[0][Y] = -48.0f;
@@ -282,28 +282,28 @@ void	TSKbg01(int id)
 						bg_obj[i].line_list[2][Y] = +48.0f;
 						bg_obj[i].line_list[3][X] = +48.0f;
 						bg_obj[i].line_list[3][Y] = -48.0f;
-						bg_obj[i].line_list[0][Z] = 
-						bg_obj[i].line_list[1][Z] = 
-						bg_obj[i].line_list[2][Z] = 
-						bg_obj[i].line_list[3][Z] = -(cast(float)(rand() % 75)) / 100.0f + 0.25f;
+						bg_obj[i].line_list[0][Z] =
+						bg_obj[i].line_list[1][Z] =
+						bg_obj[i].line_list[2][Z] =
+						bg_obj[i].line_list[3][Z] = -(cast(float)(Rand() % 75)) / 100.0f + 0.25f;
 					}
 					break;
 				case	3:
 					bg_obj.length = 8192;
 					for(int i = 0; i < bg_obj.length; i++){
-						bg_obj[i].pos[X] = cast(float)(rand() % 3072) - 1536.0f;
-						bg_obj[i].pos[Y] = cast(float)(rand() % 3072) - 1536.0f;
+						bg_obj[i].pos[X] = cast(float)(Rand() % 3072) - 1536.0f;
+						bg_obj[i].pos[Y] = cast(float)(Rand() % 3072) - 1536.0f;
 						bg_obj[i].line_list.length = 1;
 						bg_obj[i].line_list[0][X] = +0.0f;
 						bg_obj[i].line_list[0][Y] = +0.0f;
-						bg_obj[i].line_list[0][Z] = -(cast(float)(rand() % 75)) / 100.0f + 0.25f;
+						bg_obj[i].line_list[0][Z] = -(cast(float)(Rand() % 75)) / 100.0f + 0.25f;
 					}
 					break;
 				case	4:
 					bg_obj.length = 1024 * 3;
 					for(int i = 0; i < bg_obj.length; i++){
-						bg_obj[i].pos[X] = cast(float)(rand() % 2048) - 1024.0f;
-						bg_obj[i].pos[Y] = cast(float)(rand() % 2048) - 1024.0f;
+						bg_obj[i].pos[X] = cast(float)(Rand() % 2048) - 1024.0f;
+						bg_obj[i].pos[Y] = cast(float)(Rand() % 2048) - 1024.0f;
 						bg_obj[i].line_list.length = 2;
 						bg_obj[i].line_list[0][X] = +0.0f;
 						bg_obj[i].line_list[0][Y] = +0.0f;
@@ -600,8 +600,8 @@ void	TSKbgQuake(int id)
 			break;
 		case	1:
 			if(TskBuf[id].wait){
-				TskBuf[id].px  = ((rand() % (256.0f * TskBuf[id].vx)) - ((256.0f * TskBuf[id].vx) / 2)) / 256.0f;
-				TskBuf[id].py  = ((rand() % (256.0f * TskBuf[id].vy)) - ((256.0f * TskBuf[id].vy) / 2)) / 256.0f;
+				TskBuf[id].px  = ((Rand() % (256.0f * TskBuf[id].vx)) - ((256.0f * TskBuf[id].vx) / 2)) / 256.0f;
+				TskBuf[id].py  = ((Rand() % (256.0f * TskBuf[id].vy)) - ((256.0f * TskBuf[id].vy) / 2)) / 256.0f;
 				TskBuf[id].vx += (0.0f - TskBuf[id].vx) / TskBuf[id].cnt;
 				TskBuf[id].vy += (0.0f - TskBuf[id].vy) / TskBuf[id].cnt;
 				scr_ofs[X] = TskBuf[id].px;

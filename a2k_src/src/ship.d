@@ -8,7 +8,6 @@
 
 private	import	std.math;
 private	import	std.intrinsic;
-private	import	std.random;
 private	import	SDL;
 private	import	opengl;
 private	import	util_sdl;
@@ -1085,7 +1084,7 @@ int	getAttractPadData(int id)
 
 	/* ショット */
 	if(!demo_fire && eid != -1){
-		demo_fire = rand() % 120 + 120;
+		demo_fire = Rand() % 120 + 120;
 	}else{
 		if(demo_fire){
 			demo_fire--;

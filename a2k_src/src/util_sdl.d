@@ -7,6 +7,7 @@
 */
 
 private	import	std.string;
+private import core.stdc.stdio;
 private	import	SDL;
 private	import	opengl;
 private	import	define;
@@ -53,7 +54,8 @@ int		initSDL()
     }
 
 	Uint32	videoFlags;
-	videoFlags = SDL_OPENGL | SDL_FULLSCREEN;
+	//videoFlags = SDL_OPENGL | SDL_FULLSCREEN;
+	videoFlags = SDL_OPENGL;
 	//videoFlags = SDL_OPENGL | SDL_RESIZABLE;
 	debug{
 		videoFlags = SDL_OPENGL | SDL_RESIZABLE;
@@ -98,7 +100,7 @@ void	closeSDL()
 }
 
 
-void	readSDLtexture(char[] fname, int bank)
+void	readSDLtexture(const char[] fname, int bank)
 {
 	offscreen[bank] = SDL_LoadBMP(toStringz(fname));
 	if(offscreen[bank]){

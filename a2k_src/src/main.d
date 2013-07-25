@@ -6,7 +6,11 @@
 	2003/11/28 jumpei isshiki
 */
 
-private	import	std.c.windows.windows;
+version (Windows) {
+	private	import	std.c.windows.windows;
+}
+private	import	std.random;
+private	import	core.stdc.stdio;
 private	import	SDL;
 private	import	opengl;
 private	import	util_sdl;
@@ -20,11 +24,13 @@ private	import	task;
 private	import	gctrl;
 private	import	ship;
 
-extern (C) void	gc_init();
-extern (C) void	gc_term();
-extern (C) void	_minit();
-extern (C) void	_moduleCtor();
-extern (C) void	_moduleUnitTests();
+version(Windows) {
+	extern (C) void	gc_init();
+	extern (C) void	gc_term();
+	extern (C) void	_minit();
+	extern (C) void	_moduleCtor();
+	extern (C) void	_moduleUnitTests();
+}
 
 int		turn = 0;
 int		game_exec = 0;
@@ -32,25 +38,34 @@ int		pause = 0;
 int		pause_flag = 0;
 int		skip = 0;
 
-extern (Windows)
-int		WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-{
-	int		result;
-  
-	gc_init();
-	_minit();
+static Random rndgen;
 
-	try{
-		_moduleCtor();
-		_moduleUnitTests();
-		result = boot();
-	}catch (Object o){
-		MessageBoxA(null, cast(char*)o.toString(), "Error", MB_OK | MB_ICONEXCLAMATION);
-		result = 0;
+version(Windows) {
+	extern (Windows)
+	int		WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+	{
+		int		result;
+
+		gc_init();
+		_minit();
+
+		try{
+			_moduleCtor();
+			_moduleUnitTests();
+			result = boot();
+		}catch (Object o){
+			MessageBoxA(null, cast(char*)o.toString(), "Error", MB_OK | MB_ICONEXCLAMATION);
+			result = 0;
+		}
+		gc_term();
+
+		return result;
 	}
-	gc_term();
-
-	return result;
+} else {
+	int main(string[] argv)
+	{
+		return boot();
+	}
 }
 
 
@@ -67,6 +82,8 @@ int		boot()
 	long		nowTick;
 	int			frame;
 	int			i;
+
+	rndgen = Random(unpredictableSeed);
 
 	// NaN Exception
 	debug{
@@ -111,10 +128,10 @@ int		boot()
 			game_exec = 0;
 		}
 		nowTick = SDL_GetTicks();
-		frame = (nowTick - prvTickCount) / interval;
+		frame = cast(int)((nowTick - prvTickCount) / interval);
 		if(frame <= 0){
 			frame = 1;
-			SDL_Delay(prvTickCount + interval - nowTick);
+			SDL_Delay(cast(uint)(prvTickCount + interval - nowTick));
 			if(accframe){
 			  prvTickCount = SDL_GetTicks();
 			}else{
@@ -292,4 +309,16 @@ void	collision_sub3(int id, int group)
 	}
 
 	return;
+}
+
+uint Rand()
+{
+	uint ret = rndgen.front();
+	rndgen.popFront();
+
+	debug{
+		//writefln("rand %d", ret);
+	}
+
+	return ret;
 }

@@ -9,6 +9,7 @@
 private	import	std.stdio;
 private	import	std.math;
 private	import	std.string;
+private	import	std.conv;
 private	import	SDL;
 private	import	opengl;
 private	import	util_sdl;
@@ -142,7 +143,7 @@ void	TSKtitleDraw(int id)
 	glDisable(GL_TEXTURE_2D);
 	glBegin(GL_QUADS);
 	glColor3f(0.75f, 0.75f, 0.75f);
-	str_buf = "HELLO WORLD PROJECT 2004";
+	str_buf = "HELLO WORLD PROJECT 2004".dup;
 	pos[X] = +(SCREEN_Y / 2) - 16.0f - getWidthASCII(str_buf, 0.5f);
 	pos[Y] = -(SCREEN_Y / 2) + 24.0f;
 	pos[X]  = ceil(pos[X]);
@@ -153,7 +154,7 @@ void	TSKtitleDraw(int id)
 	switch(TskBuf[id].step){
 		case	1:
 			if(!(TskBuf[id].cnt & 0x20)){
-				str_buf = "PRESS SHOT BUTTON";
+				str_buf = "PRESS SHOT BUTTON".dup;
 				pos[X]  = -getWidthASCII(str_buf, 0.5f);
 				pos[X] /= 2.0f;
 				pos[Y]  = -64.0f;
@@ -164,7 +165,7 @@ void	TSKtitleDraw(int id)
 			break;
 		case	2:
 			if(!(TskBuf[id].cnt & 0x01)){
-				str_buf = "PRESS SHOT BUTTON";
+				str_buf = "PRESS SHOT BUTTON".dup;
 				pos[X]  = -getWidthASCII(str_buf, 0.5f);
 				pos[X] /= 2.0f;
 				pos[Y]  = -64.0f;
@@ -174,36 +175,36 @@ void	TSKtitleDraw(int id)
 			}
 			break;
 		case	3:
-			str_buf = "           ";
+			str_buf = "           ".dup;
 			pos[X]  = -getWidthASCII(str_buf, 0.5f);
 			pos[X] /= 2.0f;
 			pos[X]  = ceil(pos[X]);
 			DrawMenuColor(0);
-			str_buf = "EASY GAME  ";
+			str_buf = "EASY GAME  ".dup;
 			pos[Y]  = -48.0f - 12.0f * 0;
 			drawASCII(str_buf, pos[X], pos[Y], 0.5f);
 			DrawMenuColor(1);
-			str_buf = "NORMAL GAME";
+			str_buf = "NORMAL GAME".dup;
 			pos[Y]  = -48.0f - 12.0f * 1;
 			drawASCII(str_buf, pos[X], pos[Y], 0.5f);
 			DrawMenuColor(2);
-			str_buf = "HARD GAME  ";
+			str_buf = "HARD GAME  ".dup;
 			pos[Y]  = -48.0f - 12.0f * 2;
 			drawASCII(str_buf, pos[X], pos[Y], 0.5f);
 			DrawMenuColor(3);
-			str_buf = "OPTION     ";
+			str_buf = "OPTION     ".dup;
 			pos[Y]  = -48.0f - 12.0f * 3;
 			drawASCII(str_buf, pos[X], pos[Y], 0.5f);
 			DrawMenuColor(4);
-			str_buf = "EXIT       ";
+			str_buf = "EXIT       ".dup;
 			pos[Y]  = -48.0f - 12.0f * 4;
 			drawASCII(str_buf, pos[X], pos[Y], 0.5f);
-			str_buf = "HIGH 00000000";
+			str_buf = "HIGH 00000000".dup;
 			pos[X]  = -getWidthASCII(str_buf, 0.5f);
 			pos[X] /= 2.0f;
 			pos[X]  = ceil(pos[X]);
 			pos[Y]  = -48.0f - 12.0f * 6;
-			str_buf = "HIGH ";
+			str_buf = "HIGH ".dup;
 			switch(menu_now){
 				case	0:
 					if(high_easy < 10000000) str_buf ~= "0";
@@ -213,7 +214,7 @@ void	TSKtitleDraw(int id)
 					if(high_easy < 1000    ) str_buf ~= "0";
 					if(high_easy < 100     ) str_buf ~= "0";
 					if(high_easy < 10      ) str_buf ~= "0";
-					str_buf ~= toString(high_easy);
+					str_buf ~= to!string(high_easy);
 					drawASCII(str_buf, pos[X], pos[Y], 0.5f);
 					break;
 				case	1:
@@ -224,7 +225,7 @@ void	TSKtitleDraw(int id)
 					if(high_normal < 1000    ) str_buf ~= "0";
 					if(high_normal < 100     ) str_buf ~= "0";
 					if(high_normal < 10      ) str_buf ~= "0";
-					str_buf ~= toString(high_normal);
+					str_buf ~= to!string(high_normal);
 					drawASCII(str_buf, pos[X], pos[Y], 0.5f);
 					break;
 				case	2:
@@ -235,7 +236,7 @@ void	TSKtitleDraw(int id)
 					if(high_hard < 1000    ) str_buf ~= "0";
 					if(high_hard < 100     ) str_buf ~= "0";
 					if(high_hard < 10      ) str_buf ~= "0";
-					str_buf ~= toString(high_hard);
+					str_buf ~= to!string(high_hard);
 					drawASCII(str_buf, pos[X], pos[Y], 0.5f);
 					break;
 				default:
@@ -244,135 +245,135 @@ void	TSKtitleDraw(int id)
 			break;
 		case	4:
 			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-			str_buf = "- OPTION -";
+			str_buf = "- OPTION -".dup;
 			pos[X]  = -getWidthASCII(str_buf, 0.5f);
 			pos[X] /= 2.0f;
 			pos[Y]  = -32.0f - 12.0f * 0;
 			pos[X]  = ceil(pos[X]);
 			pos[Y]  = ceil(pos[Y]);
 			drawASCII(str_buf, pos[X], pos[Y], 0.5f);
-			str_buf = "             ";
+			str_buf = "             ".dup;
 			pos[X]  = -getWidthASCII(str_buf, 0.5f);
 			pos[X] /= 2.0f;
 			pos[X]  = ceil(pos[X]);
 			DrawOptionColor(0);
-			str_buf = "KEY TYPE TYPE-" ~ toString(pad_type+1);
+			str_buf = "KEY TYPE TYPE-".dup ~ to!string(pad_type+1);
 			pos[Y]  = -40.0f - 12.0f * 1;
 			drawASCII(str_buf, pos[X], pos[Y], 0.5f);
 			DrawOptionColor(1);
-			str_buf = "BGM VOLUME " ~ toString(vol_music);
+			str_buf = "BGM VOLUME ".dup ~ to!string(vol_music);
 			pos[Y]  = -40.0f - 12.0f * 2;
 			drawASCII(str_buf, pos[X], pos[Y], 0.5f);
 			DrawOptionColor(2);
-			str_buf = "SE  VOLUME " ~ toString(vol_se);
+			str_buf = "SE  VOLUME ".dup ~ to!string(vol_se);
 			pos[Y]  = -40.0f - 12.0f * 3;
 			drawASCII(str_buf, pos[X], pos[Y], 0.5f);
 			DrawOptionColor(3);
-			str_buf = "EXIT          ";
+			str_buf = "EXIT          ".dup;
 			pos[Y]  = -40.0f - 12.0f * 4;
 			drawASCII(str_buf, pos[X], pos[Y], 0.5f);
 			if(option_now == 0){
 				switch(pad_type){
 					case 0:
 						glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-						str_buf = "- KEY TYPE 1 -";
+						str_buf = "- KEY TYPE 1 -".dup;
 						pos[X]  = -getWidthASCII(str_buf, 0.5f);
 						pos[X] /= 2.0f;
 						pos[Y]  = -40.0f - 12.0f * 7;
 						pos[X]  = ceil(pos[X]);
 						pos[Y]  = ceil(pos[Y]);
 						drawASCII(str_buf, pos[X], pos[Y], 0.5f);
-						str_buf = "                              ";
+						str_buf = "                              ".dup;
 						pos[X]  = -getWidthASCII(str_buf, 0.5f);
 						pos[X] /= 2.0f;
 						pos[X]  = ceil(pos[X]);
-						str_buf = "   MOVE : TENKEY'8426' CURSOLE";
+						str_buf = "   MOVE : TENKEY'8426' CURSOLE".dup;
 						pos[Y]  = -40.0f - 12.0f * 8;
 						pos[Y]  = ceil(pos[Y]);
 						drawASCII(str_buf, pos[X], pos[Y], 0.5f);
-						str_buf = "   SHOT : 'Z'";
+						str_buf = "   SHOT : 'Z'".dup;
 						pos[Y]  = -40.0f - 12.0f * 9;
 						pos[Y]  = ceil(pos[Y]);
 						drawASCII(str_buf, pos[X], pos[Y], 0.5f);
-						str_buf = "SPECIAL : 'C'";
+						str_buf = "SPECIAL : 'C'".dup;
 						pos[Y]  = -40.0f - 12.0f * 10;
 						pos[Y]  = ceil(pos[Y]);
 						drawASCII(str_buf, pos[X], pos[Y], 0.5f);
 						break;
 					case 1:
 						glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-						str_buf = "- KEY TYPE 2 -";
+						str_buf = "- KEY TYPE 2 -".dup;
 						pos[X]  = -getWidthASCII(str_buf, 0.5f);
 						pos[X] /= 2.0f;
 						pos[Y]  = -40.0f - 12.0f * 7;
 						pos[X]  = ceil(pos[X]);
 						pos[Y]  = ceil(pos[Y]);
 						drawASCII(str_buf, pos[X], pos[Y], 0.5f);
-						str_buf = "                              ";
+						str_buf = "                              ".dup;
 						pos[X]  = -getWidthASCII(str_buf, 0.5f);
 						pos[X] /= 2.0f;
 						pos[X]  = ceil(pos[X]);
-						str_buf = "   MOVE : TENKEY'8426' 'WASD'";
+						str_buf = "   MOVE : TENKEY'8426' 'WASD'".dup;
 						pos[Y]  = -40.0f - 12.0f * 8;
 						pos[Y]  = ceil(pos[Y]);
 						drawASCII(str_buf, pos[X], pos[Y], 0.5f);
-						str_buf = "   SHOT : BACKSLASH";
+						str_buf = "   SHOT : BACKSLASH".dup;
 						pos[Y]  = -40.0f - 12.0f * 9;
 						pos[Y]  = ceil(pos[Y]);
 						drawASCII(str_buf, pos[X], pos[Y], 0.5f);
-						str_buf = "SPECIAL : RIGHT-SHIFT";
+						str_buf = "SPECIAL : RIGHT-SHIFT".dup;
 						pos[Y]  = -40.0f - 12.0f * 10;
 						pos[Y]  = ceil(pos[Y]);
 						drawASCII(str_buf, pos[X], pos[Y], 0.5f);
 						break;
 					case 2:
 						glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-						str_buf = "- KEY TYPE 3 -";
+						str_buf = "- KEY TYPE 3 -".dup;
 						pos[X]  = -getWidthASCII(str_buf, 0.5f);
 						pos[X] /= 2.0f;
 						pos[Y]  = -40.0f - 12.0f * 7;
 						pos[X]  = ceil(pos[X]);
 						pos[Y]  = ceil(pos[Y]);
 						drawASCII(str_buf, pos[X], pos[Y], 0.5f);
-						str_buf = "                              ";
+						str_buf = "                              ".dup;
 						pos[X]  = -getWidthASCII(str_buf, 0.5f);
 						pos[X] /= 2.0f;
 						pos[X]  = ceil(pos[X]);
-						str_buf = "   MOVE : TENKEY'8426' CURSOLE";
+						str_buf = "   MOVE : TENKEY'8426' CURSOLE".dup;
 						pos[Y]  = -40.0f - 12.0f * 8;
 						pos[Y]  = ceil(pos[Y]);
 						drawASCII(str_buf, pos[X], pos[Y], 0.5f);
-						str_buf = "   SHOT : LEFT-SHIFT";
+						str_buf = "   SHOT : LEFT-SHIFT".dup;
 						pos[Y]  = -40.0f - 12.0f * 9;
 						pos[Y]  = ceil(pos[Y]);
 						drawASCII(str_buf, pos[X], pos[Y], 0.5f);
-						str_buf = "SPECIAL : LEFT-CTRL";
+						str_buf = "SPECIAL : LEFT-CTRL".dup;
 						pos[Y]  = -40.0f - 12.0f * 10;
 						pos[Y]  = ceil(pos[Y]);
 						drawASCII(str_buf, pos[X], pos[Y], 0.5f);
 						break;
 					case 3:
 						glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-						str_buf = "- KEY TYPE 4 -";
+						str_buf = "- KEY TYPE 4 -".dup;
 						pos[X]  = -getWidthASCII(str_buf, 0.5f);
 						pos[X] /= 2.0f;
 						pos[Y]  = -40.0f - 12.0f * 7;
 						pos[X]  = ceil(pos[X]);
 						pos[Y]  = ceil(pos[Y]);
 						drawASCII(str_buf, pos[X], pos[Y], 0.5f);
-						str_buf = "                              ";
+						str_buf = "                              ".dup;
 						pos[X]  = -getWidthASCII(str_buf, 0.5f);
 						pos[X] /= 2.0f;
 						pos[X]  = ceil(pos[X]);
-						str_buf = "   MOVE : TENKEY'8426' CURSOLE";
+						str_buf = "   MOVE : TENKEY'8426' CURSOLE".dup;
 						pos[Y]  = -40.0f - 12.0f * 8;
 						pos[Y]  = ceil(pos[Y]);
 						drawASCII(str_buf, pos[X], pos[Y], 0.5f);
-						str_buf = "   SHOT : SPACE";
+						str_buf = "   SHOT : SPACE".dup;
 						pos[Y]  = -40.0f - 12.0f * 9;
 						pos[Y]  = ceil(pos[Y]);
 						drawASCII(str_buf, pos[X], pos[Y], 0.5f);
-						str_buf = "SPECIAL : LEFT-ALT";
+						str_buf = "SPECIAL : LEFT-ALT".dup;
 						pos[Y]  = -40.0f - 12.0f * 10;
 						pos[Y]  = ceil(pos[Y]);
 						drawASCII(str_buf, pos[X], pos[Y], 0.5f);
@@ -436,7 +437,7 @@ void	MENUmodeSet(int id)
 		default:
 			break;
 	}
-				
+
 	return;
 }
 
@@ -477,6 +478,6 @@ void	MENUoptionSet(int id)
 		default:
 			break;
 	}
-				
+
 	return;
 }

@@ -22,7 +22,7 @@
 
 /* Include file for SDL keyboard event handling */
 
-public import SDL_types;
+import SDL_types;
 // !!! A hack! struct SDL_keysym is defined in this module,
 // !!! so we need to resolve the nameclash...
 // !!! Definitely won't work on *NIX but for now will do.

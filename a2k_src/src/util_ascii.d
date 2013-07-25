@@ -328,7 +328,7 @@ private	float[][]	ascii_font = [
 									],
 								];
 
-private	char[]	ascii_dict = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.:!?\"'-=+ 0123456789";
+private	string	ascii_dict = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.:!?\"'-=+ 0123456789";
 
 void	initASCII()
 {
@@ -343,7 +343,7 @@ void	initASCII()
 }
 
 
-void	drawASCII(char[] str,float px,float py,float s)
+void	drawASCII(const char[] str,float px,float py,float s)
 {
 	int			word;
 	float		nx,ny,nz;
@@ -390,7 +390,7 @@ static	int	serchASCIIdict(char word)
 }
 
 
-float	getWidthASCII(char[] str,float s)
+float	getWidthASCII(const char[] str,float s)
 {
 	int		word;
 	float	wx = 0.0f;

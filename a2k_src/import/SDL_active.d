@@ -22,7 +22,7 @@
 
 /* Include file for SDL application focus event handling */
 
-public import SDL_types;
+import SDL_types;
 
 extern(C):
 

@@ -7,7 +7,6 @@
 */
 
 private	import	std.math;
-private	import	std.random;
 private	import	bulletml;
 private	import	main;
 private	import	task;
@@ -30,15 +29,10 @@ void	initBulletcommandParser(int bank)
 	}
 }
 
-void	readBulletcommandParser(int bank, char[] fname)
+void	readBulletcommandParser(int bank, const char[] fname)
 {
-	char[]	buf;
-
-	buf.length = 256;
-	buf = fname ~ "\0";
-	parser[bank] = BulletMLParserTinyXML_new(cast(char*)buf);
+	parser[bank] = BulletMLParserTinyXML_new(std.string.toStringz(fname));
 	if(parser[bank]) BulletMLParserTinyXML_parse(parser[bank]);
-	buf.length = 0;
 }
 
 void	releaseBulletcommandParser()
@@ -247,7 +241,7 @@ double	getBulletSpeedY_(BulletMLRunner* runner){
 double	getRand_(BulletMLRunner* runner){
 	double	rand_val;
 	//printf("getRand_(%d)\n",BulletCommand.now.id);
-	rand_val = rand() % 10000;
+	rand_val = Rand() % 10000;
 	rand_val /= 10000;
 	return	rand_val;
 }

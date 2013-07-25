@@ -7,7 +7,7 @@
 */
 
 private	import	std.math;
-private	import	std.random;
+private	import	main;
 private	import	std.string;
 private	import	SDL;
 private	import	opengl;
@@ -358,9 +358,9 @@ void	TSKOption03(int id)
 			}
 			if(!cmd.isEnd()) cmd.run();
 			break;
-			TskBuf[id].ang_x  = rand() % 65536;
+			TskBuf[id].ang_x  = Rand() % 65536;
 			TskBuf[id].ang_x *= PI / 65536.0f;
-			TskBuf[id].ax = 
+			TskBuf[id].ax =
 			TskBuf[id].ay = sin(TskBuf[id].ang_x) * 5.0f / PI;
 			TskBuf[id].vx = cos(TskBuf[id].ang_x) * 5.0f / PI_2;
 			TskBuf[id].vy = cos(TskBuf[id].ang_x) * 5.0f / PI_2;

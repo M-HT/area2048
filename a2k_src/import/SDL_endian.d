@@ -22,7 +22,7 @@
 
 /* Functions for reading and writing endian-specific values */
 
-/* These functions read and write data of the specified endianness, 
+/* These functions read and write data of the specified endianness,
    dynamically translating to the host machine endianness.
 
    e.g.: If you want to read a 16 bit value on big-endian machine from
@@ -30,13 +30,13 @@
 		value = SDL_ReadLE16(rp);
          Note that the read/write functions use SDL_RWops pointers
          instead of FILE pointers.  This allows you to read and write
-         endian values from large chunks of memory as well as files 
+         endian values from large chunks of memory as well as files
          and other data sources.
 */
 
-public import SDL_types;
-public import SDL_rwops;
-public import SDL_byteorder;
+import SDL_types;
+import SDL_rwops;
+import SDL_byteorder;
 
 extern(C):
 

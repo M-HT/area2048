@@ -25,7 +25,7 @@
 	These are independent of the other SDL routines.
 */
 
-public import SDL_types;
+import SDL_types;
 
 extern(C):
 
