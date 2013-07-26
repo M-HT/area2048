@@ -7,7 +7,7 @@
 */
 
 private	import	std.math;
-private	import	std.intrinsic;
+//private	import	std.intrinsic;
 private	import	SDL;
 private	import	opengl;
 private	import	util_sdl;

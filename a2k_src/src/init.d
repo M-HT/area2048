@@ -7,7 +7,6 @@
 */
 
 private	import	std.stdio;
-private	import	std.stream;
 private	import	util_sdl;
 private	import	util_snd;
 private	import	util_pad;
@@ -89,79 +88,88 @@ void	bulletINIT()
 	readBulletcommandParser( BULLET_BOSS0506, "bulletboss0506.xml");
 }
 
+private	void	writeScore()
+{
+	scope File fd;
+	try {
+		fd.open("score.dat", "wb");
+		int write_data[3] = [high_easy, high_normal, high_hard];
+		fd.rawWrite(write_data);
+	} finally {
+		fd.close();
+	}
+}
+
+private	void	writeConfig()
+{
+	scope File fd;
+	try {
+		fd.open("config.dat", "wb");
+		int write_data[3] = [pad_type, vol_se, vol_music];
+		fd.rawWrite(write_data);
+	} finally {
+		fd.close();
+	}
+}
+
+private	void	readScore()
+{
+	scope File fd;
+	try {
+		fd.open("score.dat");
+		if (fd.size != 12) {
+			fd.close();
+			writeScore();
+			return;
+		}
+		int read_data[3];
+		fd.rawRead(read_data);
+		high_easy = read_data[0];
+		high_normal = read_data[1];
+		high_hard = read_data[2];
+	} catch (Exception e) {
+		writeScore();
+	} finally {
+		fd.close();
+	}
+}
+
+private	void	readConfig()
+{
+	scope File fd;
+	try {
+		fd.open("config.dat");
+		if (fd.size != 12) {
+			fd.close();
+			writeConfig();
+			return;
+		}
+		int read_data[3];
+		fd.rawRead(read_data);
+		pad_type = read_data[0];
+		vol_se = read_data[1];
+		vol_music = read_data[2];
+		volumeSNDse(vol_se);
+		volumeSNDmusic(vol_music);
+	} catch (Exception e) {
+		writeConfig();
+	} finally {
+		fd.close();
+	}
+}
+
 void	configINIT()
 {
 	high_easy = 0;
 	high_normal = 0;
 	high_hard = 0;
 
-	scope std.stream.File fd = new std.stream.File;
-
-	try {
-		fd.open("score.dat");
-		if(fd.size() != 12){
-			fd.close();
-			writefln("score.dat initialized");
-		    fd.create("score.dat");
-			fd.write(high_easy);
-			fd.write(high_normal);
-			fd.write(high_hard);
-		}else{
-			fd.read(high_easy);
-			fd.read(high_normal);
-			fd.read(high_hard);
-		}
-	} catch (Error e) {
-		writefln("score.dat initialized");
-	    fd.create("score.dat");
-		fd.write(high_easy);
-		fd.write(high_normal);
-		fd.write(high_hard);
-		fd.close();
-	} finally {
-		fd.close();
-    }
-
-	fd.open("config.dat");
-	try {
-		if(fd.size() != 12){
-			fd.close();
-			writefln("config.dat initialized");
-		    fd.create("config.dat");
-			fd.write(pad_type);
-			fd.write(vol_se);
-			fd.write(vol_music);
-		}else{
-			fd.read(pad_type);
-			fd.read(vol_se);
-			fd.read(vol_music);
-			volumeSNDse(vol_se);
-			volumeSNDmusic(vol_music);
-		}
-	} catch (Error e) {
-		writefln("config.dat initialized");
-	    fd.create("config.dat");
-		fd.write(pad_type);
-		fd.write(vol_se);
-		fd.write(vol_music);
-		fd.close();
-	} finally {
-		fd.close();
-    }
+	readScore();
+	readConfig();
 }
 
 void	configSAVE()
 {
-	scope std.stream.File fd = new std.stream.File;
-    fd.create("score.dat");
-	fd.write(high_easy);
-	fd.write(high_normal);
-	fd.write(high_hard);
-	fd.close();
-
-    fd.create("config.dat");
-	fd.write(pad_type);
-	fd.write(vol_se);
-	fd.write(vol_music);
-	fd.close();
+	writeScore();
+	writeConfig();
 }
