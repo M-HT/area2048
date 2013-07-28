@@ -8,7 +8,11 @@
 
 private	import	std.math;
 private	import	SDL;
-private	import	opengl;
+version (USE_GLES) {
+	private	import	opengles;
+} else {
+	private	import opengl;
+}
 private	import	util_sdl;
 
 const float	ASC_SIZE = (16.0f + 2.0f);

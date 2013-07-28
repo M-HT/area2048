@@ -9,7 +9,11 @@
 private	import	std.math;
 //private	import	std.intrinsic;
 private	import	SDL;
-private	import	opengl;
+version (USE_GLES) {
+	private	import	opengles;
+} else {
+	private	import opengl;
+}
 private	import	util_sdl;
 private	import	util_pad;
 private	import	util_snd;
@@ -523,54 +527,38 @@ void	TSKshipInt(int id)
 void	TSKshipDraw(int id)
 {
 	float[XYZ]	pos;
+	int	bodyNumVertices = cast(int)(TskBuf[id].body_ang.length);
+	GLfloat[]	bodyVertices;
 
-	if(TskBuf[id].fp_int && !(TskBuf[id].tskid & TSKID_MUTEKI)){
-		glColor4f(0.4f,0.4f,0.8f,TskBuf[id].alpha);
-		glBegin(GL_POLYGON);
-		for(int i = 0; i < TskBuf[id].body_ang.length; i++){
-			pos[X] = sin(TskBuf[id].body_ang[i][X] + TskBuf[id].rot) * getPointX(TskBuf[id].body_ang[i][W] * 3.0f, TskBuf[id].pz);
-			pos[Y] = cos(TskBuf[id].body_ang[i][Y] + TskBuf[id].rot) * getPointY(TskBuf[id].body_ang[i][W] * 3.0f, TskBuf[id].pz);
-			pos[Z] = TskBuf[id].body_ang[i][Z];
-			glVertex3f(pos[X] - getPointX(TskBuf[id].px - scr_pos[X], TskBuf[id].pz),
-					   pos[Y] - getPointY(TskBuf[id].py - scr_pos[Y], TskBuf[id].pz),
-					   pos[Z]);
-		}
-		glEnd();
-		glColor4f(1.0f,1.0f,1.0f,TskBuf[id].alpha);
-		glBegin(GL_LINE_LOOP);
-		for(int i = 0; i < TskBuf[id].line_ang.length; i++){
-			pos[X] = sin(TskBuf[id].line_ang[i][X] + TskBuf[id].rot) * getPointX(TskBuf[id].line_ang[i][W] * 3.0f, TskBuf[id].pz);
-			pos[Y] = cos(TskBuf[id].line_ang[i][Y] + TskBuf[id].rot) * getPointY(TskBuf[id].line_ang[i][W] * 3.0f, TskBuf[id].pz);
-			pos[Z] = TskBuf[id].line_ang[i][Z];
-			glVertex3f(pos[X] - getPointX(TskBuf[id].px - scr_pos[X], TskBuf[id].pz),
-					   pos[Y] - getPointY(TskBuf[id].py - scr_pos[Y], TskBuf[id].pz),
-					   pos[Z]);
-		}
-		glEnd();
-	}else{
-		glColor4f(0.4f,0.4f,0.8f,TskBuf[id].alpha);
-		glBegin(GL_POLYGON);
-		for(int i = 0; i < TskBuf[id].body_ang.length; i++){
-			pos[X] = sin(TskBuf[id].body_ang[i][X] + TskBuf[id].rot) * getPointX(TskBuf[id].body_ang[i][W] * 3.0f, TskBuf[id].pz);
-			pos[Y] = cos(TskBuf[id].body_ang[i][Y] + TskBuf[id].rot) * getPointY(TskBuf[id].body_ang[i][W] * 3.0f, TskBuf[id].pz);
-			pos[Z] = TskBuf[id].body_ang[i][Z];
-			glVertex3f(pos[X] - getPointX(TskBuf[id].px - scr_pos[X], TskBuf[id].pz),
-					   pos[Y] - getPointY(TskBuf[id].py - scr_pos[Y], TskBuf[id].pz),
-					   pos[Z]);
-		}
-		glEnd();
-		glColor4f(1.0f,1.0f,1.0f,TskBuf[id].alpha);
-		glBegin(GL_LINE_LOOP);
-		for(int i = 0; i < TskBuf[id].line_ang.length; i++){
-			pos[X] = sin(TskBuf[id].line_ang[i][X] + TskBuf[id].rot) * getPointX(TskBuf[id].line_ang[i][W] * 3.0f, TskBuf[id].pz);
-			pos[Y] = cos(TskBuf[id].line_ang[i][Y] + TskBuf[id].rot) * getPointY(TskBuf[id].line_ang[i][W] * 3.0f, TskBuf[id].pz);
-			pos[Z] = TskBuf[id].line_ang[i][Z];
-			glVertex3f(pos[X] - getPointX(TskBuf[id].px - scr_pos[X], TskBuf[id].pz),
-					   pos[Y] - getPointY(TskBuf[id].py - scr_pos[Y], TskBuf[id].pz),
-					   pos[Z]);
-		}
-		glEnd();
+	bodyVertices.length = bodyNumVertices*XYZ;
+
+	foreach(i; 0..bodyNumVertices){
+		pos[X] = sin(TskBuf[id].body_ang[i][X] + TskBuf[id].rot) * getPointX(TskBuf[id].body_ang[i][W] * 3.0f, TskBuf[id].pz);
+		pos[Y] = cos(TskBuf[id].body_ang[i][Y] + TskBuf[id].rot) * getPointY(TskBuf[id].body_ang[i][W] * 3.0f, TskBuf[id].pz);
+		pos[Z] = TskBuf[id].body_ang[i][Z];
+		bodyVertices[i*XYZ + X] = pos[X] - getPointX(TskBuf[id].px - scr_pos[X], TskBuf[id].pz);
+		bodyVertices[i*XYZ + Y] = pos[Y] - getPointY(TskBuf[id].py - scr_pos[Y], TskBuf[id].pz);
+		bodyVertices[i*XYZ + Z] = pos[Z];
 	}
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glColor4f(0.4f,0.4f,0.8f,TskBuf[id].alpha);
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(bodyVertices.ptr));
+	glDrawArrays(GL_TRIANGLE_FAN, 0, bodyNumVertices);
+
+	glColor4f(1.0f,1.0f,1.0f,TskBuf[id].alpha);
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(bodyVertices.ptr));
+	glDrawArrays(GL_LINE_LOOP, 0, bodyNumVertices);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+	bodyVertices.length = 0;
+/*
+	if(TskBuf[id].fp_int && !(TskBuf[id].tskid & TSKID_MUTEKI)){
+	}else{
+	}
+*/
 }
 
 void	TSKshipExit(int id)
@@ -718,29 +706,33 @@ void	TSKsshotInt(int id)
 void	TSKsshotDraw(int id)
 {
 	float[XYZ]	pos;
+	int	bodyNumVertices = cast(int)(TskBuf[id].body_ang.length);
+	GLfloat[]	bodyVertices;
+
+	bodyVertices.length = bodyNumVertices*XYZ;
+
+	foreach(i; 0..bodyNumVertices){
+		pos[X] = sin(TskBuf[id].bullet_direction - TskBuf[id].body_ang[i][X]) * getPointX(TskBuf[id].body_ang[i][W], TskBuf[id].pz);
+		pos[Y] = cos(TskBuf[id].bullet_direction - TskBuf[id].body_ang[i][Y]) * getPointY(TskBuf[id].body_ang[i][W], TskBuf[id].pz);
+		pos[Z] = TskBuf[id].body_ang[i][Z];
+		bodyVertices[i*XYZ + X] = pos[X] - getPointX(TskBuf[id].px - scr_pos[X], TskBuf[id].pz);
+		bodyVertices[i*XYZ + Y] = pos[Y] - getPointY(TskBuf[id].py - scr_pos[Y], TskBuf[id].pz);
+		bodyVertices[i*XYZ + Z] = pos[Z];
+	}
+
+	glEnableClientState(GL_VERTEX_ARRAY);
 
 	glColor4f(0.6f,0.6f,0.6f,TskBuf[id].alpha);
-	glBegin(GL_POLYGON);
-	for(int i = 0; i < TskBuf[id].body_ang.length; i++){
-		pos[X] = sin(TskBuf[id].bullet_direction - TskBuf[id].body_ang[i][X]) * getPointX(TskBuf[id].body_ang[i][W], TskBuf[id].pz);
-		pos[Y] = cos(TskBuf[id].bullet_direction - TskBuf[id].body_ang[i][Y]) * getPointY(TskBuf[id].body_ang[i][W], TskBuf[id].pz);
-		pos[Z] = TskBuf[id].body_ang[i][Z];
-		glVertex3f(pos[X] - getPointX(TskBuf[id].px - scr_pos[X], TskBuf[id].pz),
-				   pos[Y] - getPointY(TskBuf[id].py - scr_pos[Y], TskBuf[id].pz),
-				   pos[Z]);
-	}
-	glEnd();
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(bodyVertices.ptr));
+	glDrawArrays(GL_TRIANGLE_FAN, 0, bodyNumVertices);
+
 	glColor4f(1.0f,1.0f,1.0f,TskBuf[id].alpha);
-	glBegin(GL_LINE_LOOP);
-	for(int i = 0; i < TskBuf[id].body_ang.length; i++){
-		pos[X] = sin(TskBuf[id].bullet_direction - TskBuf[id].body_ang[i][X]) * getPointX(TskBuf[id].body_ang[i][W], TskBuf[id].pz);
-		pos[Y] = cos(TskBuf[id].bullet_direction - TskBuf[id].body_ang[i][Y]) * getPointY(TskBuf[id].body_ang[i][W], TskBuf[id].pz);
-		pos[Z] = TskBuf[id].body_ang[i][Z];
-		glVertex3f(pos[X] - getPointX(TskBuf[id].px - scr_pos[X], TskBuf[id].pz),
-				   pos[Y] - getPointY(TskBuf[id].py - scr_pos[Y], TskBuf[id].pz),
-				   pos[Z]);
-	}
-	glEnd();
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(bodyVertices.ptr));
+	glDrawArrays(GL_LINE_LOOP, 0, bodyNumVertices);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+	bodyVertices.length = 0;
 }
 
 void	TSKsshotExit(int id)
@@ -891,29 +883,33 @@ void	TSKbarrier(int id)
 void	TSKbarrierDraw(int id)
 {
 	float[XYZ]	pos;
+	int	bodyNumVertices = cast(int)(TskBuf[id].body_list.length);
+	GLfloat[]	bodyVertices;
+
+	bodyVertices.length = bodyNumVertices*XYZ;
+
+	foreach(i; 0..bodyNumVertices){
+		pos[X] = sin(TskBuf[id].body_ang[i][X] + TskBuf[id].rot) * getPointX(TskBuf[id].body_ang[i][W] * 3.0f, TskBuf[id].pz);
+		pos[Y] = cos(TskBuf[id].body_ang[i][Y] + TskBuf[id].rot) * getPointY(TskBuf[id].body_ang[i][W] * 3.0f, TskBuf[id].pz);
+		pos[Z] = TskBuf[id].body_ang[i][Z];
+		bodyVertices[i*XYZ + X] = pos[X] - getPointX(TskBuf[id].px - scr_pos[X], TskBuf[id].pz);
+		bodyVertices[i*XYZ + Y] = pos[Y] - getPointY(TskBuf[id].py - scr_pos[Y], TskBuf[id].pz);
+		bodyVertices[i*XYZ + Z] = pos[Z];
+	}
+
+	glEnableClientState(GL_VERTEX_ARRAY);
 
 	glColor4f(0.25f,0.25f,0.50f,(0.25f * TskBuf[id].alpha));
-	glBegin(GL_POLYGON);
-	for(int i = 0; i < TskBuf[id].body_list.length; i++){
-		pos[X] = sin(TskBuf[id].body_ang[i][X] + TskBuf[id].rot) * getPointX(TskBuf[id].body_ang[i][W] * 3.0f, TskBuf[id].pz);
-		pos[Y] = cos(TskBuf[id].body_ang[i][Y] + TskBuf[id].rot) * getPointY(TskBuf[id].body_ang[i][W] * 3.0f, TskBuf[id].pz);
-		pos[Z] = TskBuf[id].body_ang[i][Z];
-		glVertex3f(pos[X] - getPointX(TskBuf[id].px - scr_pos[X], TskBuf[id].pz),
-				   pos[Y] - getPointY(TskBuf[id].py - scr_pos[Y], TskBuf[id].pz),
-				   pos[Z]);
-	}
-	glEnd();
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(bodyVertices.ptr));
+	glDrawArrays(GL_TRIANGLE_FAN, 0, bodyNumVertices);
+
 	glColor4f(1.0f,1.0f,1.0f,(1.0f * TskBuf[id].alpha));
-	glBegin(GL_LINE_LOOP);
-	for(int i = 0; i < TskBuf[id].body_list.length; i++){
-		pos[X] = sin(TskBuf[id].body_ang[i][X] + TskBuf[id].rot) * getPointX(TskBuf[id].body_ang[i][W] * 3.0f, TskBuf[id].pz);
-		pos[Y] = cos(TskBuf[id].body_ang[i][Y] + TskBuf[id].rot) * getPointY(TskBuf[id].body_ang[i][W] * 3.0f, TskBuf[id].pz);
-		pos[Z] = TskBuf[id].body_ang[i][Z];
-		glVertex3f(pos[X] - getPointX(TskBuf[id].px - scr_pos[X], TskBuf[id].pz),
-				   pos[Y] - getPointY(TskBuf[id].py - scr_pos[Y], TskBuf[id].pz),
-				   pos[Z]);
-	}
-	glEnd();
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(bodyVertices.ptr));
+	glDrawArrays(GL_LINE_LOOP, 0, bodyNumVertices);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+	bodyVertices.length = 0;
 }
 
 void	BombOFF()

@@ -12,7 +12,11 @@ private	import	std.random;
 private	import	std.string;
 private	import	std.conv;
 private	import	SDL;
-private	import	opengl;
+version (USE_GLES) {
+	private	import	opengles;
+} else {
+	private	import opengl;
+}
 private	import	util_sdl;
 private	import	util_pad;
 private	import	util_snd;

@@ -9,7 +9,11 @@
 private	import	std.math;
 private	import	main;
 private	import	SDL;
-private	import	opengl;
+version (USE_GLES) {
+	private	import	opengles;
+} else {
+	private	import opengl;
+}
 private	import	util_sdl;
 private	import	util_snd;
 private	import	define;
@@ -154,35 +158,56 @@ void	TSKbg00(int id)
 void	TSKbg00Draw(int id)
 {
 	float[XYZ]	pos;
+	GLfloat[4*XYZ]	quadVertices;
 
-	glBegin(GL_QUADS);
-	glColor3f(0.015f,0.015f,0.075f);
-	glVertex3f(getPointX(-1024.0f+scr_pos[X], 0.0f),
-			   getPointY(-1024.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(-1024.0f+scr_pos[X], 0.0f),
-			   getPointY(+1024.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(+1024.0f+scr_pos[X], 0.0f),
-			   getPointY(+1024.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(+1024.0f+scr_pos[X], 0.0f),
-			   getPointY(-1024.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glEnd();
+	quadVertices[0*XYZ + X] = getPointX(-1024.0f+scr_pos[X], 0.0f);
+	quadVertices[0*XYZ + Y] = getPointY(-1024.0f+scr_pos[Y], 0.0f);
+	quadVertices[0*XYZ + Z] = 0.0f;
+
+	quadVertices[1*XYZ + X] = getPointX(-1024.0f+scr_pos[X], 0.0f);
+	quadVertices[1*XYZ + Y] = getPointY(+1024.0f+scr_pos[Y], 0.0f);
+	quadVertices[1*XYZ + Z] = 0.0f;
+
+	quadVertices[2*XYZ + X] = getPointX(+1024.0f+scr_pos[X], 0.0f);
+	quadVertices[2*XYZ + Y] = getPointY(+1024.0f+scr_pos[Y], 0.0f);
+	quadVertices[2*XYZ + Z] = 0.0f;
+
+	quadVertices[3*XYZ + X] = getPointX(+1024.0f+scr_pos[X], 0.0f);
+	quadVertices[3*XYZ + Y] = getPointY(-1024.0f+scr_pos[Y], 0.0f);
+	quadVertices[3*XYZ + Z] = 0.0f;
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glColor4f(0.015f,0.015f,0.075f,1.0f);
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(quadVertices.ptr));
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
 	for(int i = 0; i < bg_obj.length; i++){
-		glBegin(GL_LINES);
-		glColor3f(0.25f*(1.0f+bg_obj[i].line_list[0][Z]),
-				  0.25f*(1.0f+bg_obj[i].line_list[0][Z]),
-				  0.25f*(1.0f+bg_obj[i].line_list[0][Z]));
-		for(int j = 0; j < bg_obj[i].line_list.length; j++){
+		int	lineNumVertices = cast(int)(bg_obj[i].line_list.length);
+		GLfloat[]	lineVertices;
+
+		lineVertices.length = lineNumVertices*XYZ;
+
+		foreach(j; 0..lineNumVertices){
 			pos[X] = getPointX(bg_obj[i].pos[X] + scr_pos[X] - bg_obj[i].line_list[j][X], bg_obj[i].line_list[j][Z]);
 			pos[Y] = getPointY(bg_obj[i].pos[Y] + scr_pos[Y] - bg_obj[i].line_list[j][Y], bg_obj[i].line_list[j][Z]);
 			pos[Z] = bg_obj[i].line_list[j][Z];
-			glVertex3f(pos[X], pos[Y], pos[Z]);
+			lineVertices[j*XYZ + X] = pos[X];
+			lineVertices[j*XYZ + Y] = pos[Y];
+			lineVertices[j*XYZ + Z] = pos[Z];
 		}
-		glEnd();
+
+		glColor4f(0.25f*(1.0f+bg_obj[i].line_list[0][Z]),
+				  0.25f*(1.0f+bg_obj[i].line_list[0][Z]),
+				  0.25f*(1.0f+bg_obj[i].line_list[0][Z]),
+				  1.0f);
+		glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(lineVertices.ptr));
+		glDrawArrays(GL_LINES, 0, lineNumVertices);
+
+		lineVertices.length = 0;
 	}
+
+	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 
@@ -339,103 +364,196 @@ void	TSKbg01Draw(int id)
 
 	if(!bg_disp) return;
 
-	glBegin(GL_QUADS);
-	glColor3f(0.015f,0.015f,0.075f);
-	glVertex3f(getPointX(-1024.0f+scr_pos[X], 0.0f),
-			   getPointY(-1024.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(-1024.0f+scr_pos[X], 0.0f),
-			   getPointY(+1024.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(+1024.0f+scr_pos[X], 0.0f),
-			   getPointY(+1024.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(+1024.0f+scr_pos[X], 0.0f),
-			   getPointY(-1024.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glEnd();
+	GLfloat[4*XYZ]	quadVertices;
+
+	quadVertices[0*XYZ + X] = getPointX(-1024.0f+scr_pos[X], 0.0f);
+	quadVertices[0*XYZ + Y] = getPointY(-1024.0f+scr_pos[Y], 0.0f);
+	quadVertices[0*XYZ + Z] = 0.0f;
+
+	quadVertices[1*XYZ + X] = getPointX(-1024.0f+scr_pos[X], 0.0f);
+	quadVertices[1*XYZ + Y] = getPointY(+1024.0f+scr_pos[Y], 0.0f);
+	quadVertices[1*XYZ + Z] = 0.0f;
+
+	quadVertices[2*XYZ + X] = getPointX(+1024.0f+scr_pos[X], 0.0f);
+	quadVertices[2*XYZ + Y] = getPointY(+1024.0f+scr_pos[Y], 0.0f);
+	quadVertices[2*XYZ + Z] = 0.0f;
+
+	quadVertices[3*XYZ + X] = getPointX(+1024.0f+scr_pos[X], 0.0f);
+	quadVertices[3*XYZ + Y] = getPointY(-1024.0f+scr_pos[Y], 0.0f);
+	quadVertices[3*XYZ + Z] = 0.0f;
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glColor4f(0.015f,0.015f,0.075f,1.0f);
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(quadVertices.ptr));
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
 	switch(bg_mode){
 		case	0:
 			for(int i = 0; i < bg_obj.length; i++){
-				glBegin(GL_LINES);
-				glColor3f(0.25f*(1.0f+bg_obj[i].line_list[0][Z]),
-						  0.25f*(1.0f+bg_obj[i].line_list[0][Z]),
-						  0.25f*(1.0f+bg_obj[i].line_list[0][Z]));
-				for(int j = 0; j < bg_obj[i].line_list.length; j++){
+				int	lineNumVertices = cast(int)(bg_obj[i].line_list.length);
+				GLfloat[]	lineVertices;
+
+				lineVertices.length = lineNumVertices*XYZ;
+
+				foreach(j; 0..lineNumVertices){
 					pos[X] = getPointX(bg_obj[i].pos[X] + scr_pos[X] - bg_obj[i].line_list[j][X], bg_obj[i].line_list[j][Z]);
 					pos[Y] = getPointY(bg_obj[i].pos[Y] + scr_pos[Y] - bg_obj[i].line_list[j][Y], bg_obj[i].line_list[j][Z]);
 					pos[Z] = bg_obj[i].line_list[j][Z];
-					glVertex3f(pos[X], pos[Y], pos[Z]);
+					lineVertices[j*XYZ + X] = pos[X];
+					lineVertices[j*XYZ + Y] = pos[Y];
+					lineVertices[j*XYZ + Z] = pos[Z];
 				}
-				glEnd();
+
+				glColor4f(0.25f*(1.0f+bg_obj[i].line_list[0][Z]),
+						  0.25f*(1.0f+bg_obj[i].line_list[0][Z]),
+						  0.25f*(1.0f+bg_obj[i].line_list[0][Z]),
+						  1.0f);
+				glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(lineVertices.ptr));
+				glDrawArrays(GL_LINES, 0, lineNumVertices);
+
+				lineVertices.length = 0;
 			}
 			break;
 		case	1:
 			for(int i = 0; i < bg_obj.length; i++){
-				glBegin(GL_LINE_LOOP);
-				glColor3f(0.25f*(1.0f+bg_obj[i].line_list[0][Z]),
-						  0.25f*(1.0f+bg_obj[i].line_list[0][Z]),
-						  0.25f*(1.0f+bg_obj[i].line_list[0][Z]));
-				for(int j = 0; j < bg_obj[i].line_list[i].length; j++){
+				int	lineNumVertices = cast(int)(bg_obj[i].line_list[i].length);
+				GLfloat[]	lineVertices;
+
+				lineVertices.length = lineNumVertices*XYZ;
+
+				foreach(j; 0..lineNumVertices){
 					pos[X] = getPointX(bg_obj[i].pos[X] + scr_pos[X] - bg_obj[i].line_list[j][X], bg_obj[i].line_list[j][Z]);
 					pos[Y] = getPointY(bg_obj[i].pos[Y] + scr_pos[Y] - bg_obj[i].line_list[j][Y], bg_obj[i].line_list[j][Z]);
 					pos[Z] = bg_obj[i].line_list[j][Z];
-					glVertex3f(pos[X], pos[Y], pos[Z]);
+					lineVertices[j*XYZ + X] = pos[X];
+					lineVertices[j*XYZ + Y] = pos[Y];
+					lineVertices[j*XYZ + Z] = pos[Z];
 				}
-				glEnd();
+
+				glColor4f(0.25f*(1.0f+bg_obj[i].line_list[0][Z]),
+						  0.25f*(1.0f+bg_obj[i].line_list[0][Z]),
+						  0.25f*(1.0f+bg_obj[i].line_list[0][Z]),
+						  1.0f);
+				glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(lineVertices.ptr));
+				glDrawArrays(GL_LINE_LOOP, 0, lineNumVertices);
+
+				lineVertices.length = 0;
 			}
 			break;
 		case	2:
 			for(int i = 0; i < bg_obj.length; i++){
-				glBegin(GL_QUADS);
-				glColor3f(0.05f*(1.0f+bg_obj[i].line_list[0][Z]),
-						  0.05f*(1.0f+bg_obj[i].line_list[0][Z]),
-						  0.05f*(1.0f+bg_obj[i].line_list[0][Z]));
-				for(int j = 0; j < bg_obj[i].line_list[i].length; j++){
+				int	lineNumVertices = cast(int)(bg_obj[i].line_list[i].length);
+				GLfloat[]	lineVertices;
+
+				lineVertices.length = lineNumVertices*XYZ;
+
+				foreach(j; 0..lineNumVertices){
 					pos[X] = getPointX(bg_obj[i].pos[X] + scr_pos[X] - bg_obj[i].line_list[j][X], bg_obj[i].line_list[j][Z]);
 					pos[Y] = getPointY(bg_obj[i].pos[Y] + scr_pos[Y] - bg_obj[i].line_list[j][Y], bg_obj[i].line_list[j][Z]);
 					pos[Z] = bg_obj[i].line_list[j][Z];
-					glVertex3f(pos[X], pos[Y], pos[Z]);
+					lineVertices[j*XYZ + X] = pos[X];
+					lineVertices[j*XYZ + Y] = pos[Y];
+					lineVertices[j*XYZ + Z] = pos[Z];
 				}
-				glEnd();
+
+				glColor4f(0.05f*(1.0f+bg_obj[i].line_list[0][Z]),
+						  0.05f*(1.0f+bg_obj[i].line_list[0][Z]),
+						  0.05f*(1.0f+bg_obj[i].line_list[0][Z]),
+						  1.0f);
+				glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(lineVertices.ptr));
+				foreach(k; 0..lineNumVertices/4){
+					glDrawArrays(GL_TRIANGLE_FAN, k*4, 4);
+				}
+
+				lineVertices.length = 0;
 			}
 			break;
 		case	3:
-			glBegin(GL_POINTS);
-			for(int i = 0; i < bg_obj.length; i++){
-				pos[Z] = bg_obj[i].line_list[0][Z];
-				glColor3f(1.0f+pos[Z],
-						  1.0f+pos[Z],
-						  1.0f+pos[Z]);
-				pos[X] = getPointX(bg_obj[i].pos[X] + scr_pos[X] - bg_obj[i].line_list[0][X], pos[Z]);
-				pos[Y] = getPointY(bg_obj[i].pos[Y] + scr_pos[Y] - bg_obj[i].line_list[0][Y], pos[Z]);
-				glVertex3f(pos[X], pos[Y], pos[Z]);
+			{
+				int	lineNumVertices = cast(int)(bg_obj.length);
+				GLfloat[]	lineVertices;
+				GLfloat[]	lineColors;
+
+				lineVertices.length = lineNumVertices*XYZ;
+				lineColors.length = lineNumVertices*XYZW;
+
+				foreach(i; 0..lineNumVertices){
+					pos[X] = getPointX(bg_obj[i].pos[X] + scr_pos[X] - bg_obj[i].line_list[0][X], pos[Z]);
+					pos[Y] = getPointY(bg_obj[i].pos[Y] + scr_pos[Y] - bg_obj[i].line_list[0][Y], pos[Z]);
+					pos[Z] = bg_obj[i].line_list[0][Z];
+					lineVertices[i*XYZ + X] = pos[X];
+					lineVertices[i*XYZ + Y] = pos[Y];
+					lineVertices[i*XYZ + Z] = pos[Z];
+					lineColors[i*XYZW + X] = 1.0f+pos[Z];
+					lineColors[i*XYZW + Y] = 1.0f+pos[Z];
+					lineColors[i*XYZW + Z] = 1.0f+pos[Z];
+					lineColors[i*XYZW + W] = 1.0f;
+				}
+
+				glEnableClientState(GL_COLOR_ARRAY);
+
+				glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(lineVertices.ptr));
+				glColorPointer(XYZW, GL_FLOAT, 0, cast(void *)(lineColors.ptr));
+				glDrawArrays(GL_POINTS, 0, lineNumVertices);
+
+				glDisableClientState(GL_COLOR_ARRAY);
+
+				lineColors.length = 0;
+				lineVertices.length = 0;
 			}
-			glEnd();
 			break;
 		case	4:
-			for(int i = 0; i < bg_obj.length; i++){
-				glBegin(GL_LINES);
-				glColor3f(0.25f*(1.0f+bg_obj[i].line_list[0][Z]),
-						  0.25f*(1.0f+bg_obj[i].line_list[0][Z]),
-						  0.25f*(1.0f+bg_obj[i].line_list[0][Z]));
-				pos[X] = getPointX(bg_obj[i].pos[X] + scr_pos[X] - bg_obj[i].line_list[0][X], bg_obj[i].line_list[0][Z]);
-				pos[Y] = getPointY(bg_obj[i].pos[Y] + scr_pos[Y] - bg_obj[i].line_list[0][Y], bg_obj[i].line_list[0][Z]);
-				pos[Z] = bg_obj[i].line_list[0][Z];
-				glVertex3f(pos[X], pos[Y], pos[Z]);
-				glColor3f(0.25f*(1.0f+bg_obj[i].line_list[1][Z]),
-						  0.25f*(1.0f+bg_obj[i].line_list[1][Z]),
-						  0.25f*(1.0f+bg_obj[i].line_list[1][Z]));
-				pos[X] = getPointX(bg_obj[i].pos[X] + scr_pos[X] - bg_obj[i].line_list[1][X], bg_obj[i].line_list[1][Z]);
-				pos[Y] = getPointY(bg_obj[i].pos[Y] + scr_pos[Y] - bg_obj[i].line_list[1][Y], bg_obj[i].line_list[1][Z]);
-				pos[Z] = bg_obj[i].line_list[1][Z];
-				glVertex3f(pos[X], pos[Y], pos[Z]);
-				glEnd();
+			{
+				int	numLines = cast(int)(bg_obj.length);
+				int	lineNumVertices = 2*numLines;
+				GLfloat[]	lineVertices;
+				GLfloat[]	lineColors;
+
+				lineVertices.length = lineNumVertices*XYZ;
+				lineColors.length = lineNumVertices*XYZW;
+
+				foreach(i; 0..numLines){
+					pos[X] = getPointX(bg_obj[i].pos[X] + scr_pos[X] - bg_obj[i].line_list[0][X], bg_obj[i].line_list[0][Z]);
+					pos[Y] = getPointY(bg_obj[i].pos[Y] + scr_pos[Y] - bg_obj[i].line_list[0][Y], bg_obj[i].line_list[0][Z]);
+					pos[Z] = bg_obj[i].line_list[0][Z];
+					lineVertices[2*i*XYZ + X] = pos[X];
+					lineVertices[2*i*XYZ + Y] = pos[Y];
+					lineVertices[2*i*XYZ + Z] = pos[Z];
+					lineColors[2*i*XYZW + X] = 0.25f*(1.0f+bg_obj[i].line_list[0][Z]);
+					lineColors[2*i*XYZW + Y] = 0.25f*(1.0f+bg_obj[i].line_list[0][Z]);
+					lineColors[2*i*XYZW + Z] = 0.25f*(1.0f+bg_obj[i].line_list[0][Z]);
+					lineColors[2*i*XYZW + W] = 1.0f;
+
+					pos[X] = getPointX(bg_obj[i].pos[X] + scr_pos[X] - bg_obj[i].line_list[1][X], bg_obj[i].line_list[1][Z]);
+					pos[Y] = getPointY(bg_obj[i].pos[Y] + scr_pos[Y] - bg_obj[i].line_list[1][Y], bg_obj[i].line_list[1][Z]);
+					pos[Z] = bg_obj[i].line_list[1][Z];
+					lineVertices[2*i*XYZ + XYZ + X] = pos[X];
+					lineVertices[2*i*XYZ + XYZ + Y] = pos[Y];
+					lineVertices[2*i*XYZ + XYZ + Z] = pos[Z];
+					lineColors[2*i*XYZW + XYZW + X] = 0.25f*(1.0f+bg_obj[i].line_list[1][Z]);
+					lineColors[2*i*XYZW + XYZW + Y] = 0.25f*(1.0f+bg_obj[i].line_list[1][Z]);
+					lineColors[2*i*XYZW + XYZW + Z] = 0.25f*(1.0f+bg_obj[i].line_list[1][Z]);
+					lineColors[2*i*XYZW + XYZW + W] = 1.0f;
+				}
+
+				glEnableClientState(GL_COLOR_ARRAY);
+
+				glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(lineVertices.ptr));
+				glColorPointer(XYZW, GL_FLOAT, 0, cast(void *)(lineColors.ptr));
+				glDrawArrays(GL_LINES, 0, lineNumVertices);
+
+				glDisableClientState(GL_COLOR_ARRAY);
+
+				lineColors.length = 0;
+				lineVertices.length = 0;
 			}
 			break;
 		default:
 			break;
 	}
+
+	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 
@@ -466,58 +584,92 @@ void	TSKbgOutBg(int id)
 
 void	TSKbgOutBgDraw(int id)
 {
+	GLfloat[4*XYZ]	quadVertices;
+
 	glDisable(GL_BLEND);
+	glEnableClientState(GL_VERTEX_ARRAY);
+
 	glColor4f(0.035f,0.035f,0.015f,1.0f);
-	glBegin(GL_QUADS);
-	glVertex3f(getPointX(-2048.0f+scr_pos[X], 0.0f),
-			   getPointY(-2048.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(-2048.0f+scr_pos[X], 0.0f),
-			   getPointY(+2048.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(-1024.0f+scr_pos[X], 0.0f),
-			   getPointY(+2048.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(-1024.0f+scr_pos[X], 0.0f),
-			   getPointY(-2048.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(+1024.0f+scr_pos[X], 0.0f),
-			   getPointY(-2048.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(+1024.0f+scr_pos[X], 0.0f),
-			   getPointY(+2048.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(+2048.0f+scr_pos[X], 0.0f),
-			   getPointY(+2048.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(+2048.0f+scr_pos[X], 0.0f),
-			   getPointY(-2048.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(-1024.0f+scr_pos[X], 0.0f),
-			   getPointY(-2048.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(-1024.0f+scr_pos[X], 0.0f),
-			   getPointY(-1024.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(+1024.0f+scr_pos[X], 0.0f),
-			   getPointY(-1024.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(+1024.0f+scr_pos[X], 0.0f),
-			   getPointY(-2048.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(-1024.0f+scr_pos[X], 0.0f),
-			   getPointY(+1024.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(-1024.0f+scr_pos[X], 0.0f),
-			   getPointY(+2048.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(+1024.0f+scr_pos[X], 0.0f),
-			   getPointY(+2048.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glVertex3f(getPointX(+1024.0f+scr_pos[X], 0.0f),
-			   getPointY(+1024.0f+scr_pos[Y], 0.0f),
-			   0.0f);
-	glEnd();
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(quadVertices.ptr));
+
+
+	quadVertices[0*XYZ + X] = getPointX(-2048.0f+scr_pos[X], 0.0f);
+	quadVertices[0*XYZ + Y] = getPointY(-2048.0f+scr_pos[Y], 0.0f);
+	quadVertices[0*XYZ + Z] = 0.0f;
+
+	quadVertices[1*XYZ + X] = getPointX(-2048.0f+scr_pos[X], 0.0f);
+	quadVertices[1*XYZ + Y] = getPointY(+2048.0f+scr_pos[Y], 0.0f);
+	quadVertices[1*XYZ + Z] = 0.0f;
+
+	quadVertices[2*XYZ + X] = getPointX(-1024.0f+scr_pos[X], 0.0f);
+	quadVertices[2*XYZ + Y] = getPointY(+2048.0f+scr_pos[Y], 0.0f);
+	quadVertices[2*XYZ + Z] = 0.0f;
+
+	quadVertices[3*XYZ + X] = getPointX(-1024.0f+scr_pos[X], 0.0f);
+	quadVertices[3*XYZ + Y] = getPointY(-2048.0f+scr_pos[Y], 0.0f);
+	quadVertices[3*XYZ + Z] = 0.0f;
+
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+
+	quadVertices[0*XYZ + X] = getPointX(+1024.0f+scr_pos[X], 0.0f);
+	quadVertices[0*XYZ + Y] = getPointY(-2048.0f+scr_pos[Y], 0.0f);
+	quadVertices[0*XYZ + Z] = 0.0f;
+
+	quadVertices[1*XYZ + X] = getPointX(+1024.0f+scr_pos[X], 0.0f);
+	quadVertices[1*XYZ + Y] = getPointY(+2048.0f+scr_pos[Y], 0.0f);
+	quadVertices[1*XYZ + Z] = 0.0f;
+
+	quadVertices[2*XYZ + X] = getPointX(+2048.0f+scr_pos[X], 0.0f);
+	quadVertices[2*XYZ + Y] = getPointY(+2048.0f+scr_pos[Y], 0.0f);
+	quadVertices[2*XYZ + Z] = 0.0f;
+
+	quadVertices[3*XYZ + X] = getPointX(+2048.0f+scr_pos[X], 0.0f);
+	quadVertices[3*XYZ + Y] = getPointY(-2048.0f+scr_pos[Y], 0.0f);
+	quadVertices[3*XYZ + Z] = 0.0f;
+
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+
+	quadVertices[0*XYZ + X] = getPointX(-1024.0f+scr_pos[X], 0.0f);
+	quadVertices[0*XYZ + Y] = getPointY(-2048.0f+scr_pos[Y], 0.0f);
+	quadVertices[0*XYZ + Z] = 0.0f;
+
+	quadVertices[1*XYZ + X] = getPointX(-1024.0f+scr_pos[X], 0.0f);
+	quadVertices[1*XYZ + Y] = getPointY(-1024.0f+scr_pos[Y], 0.0f);
+	quadVertices[1*XYZ + Z] = 0.0f;
+
+	quadVertices[2*XYZ + X] = getPointX(+1024.0f+scr_pos[X], 0.0f);
+	quadVertices[2*XYZ + Y] = getPointY(-1024.0f+scr_pos[Y], 0.0f);
+	quadVertices[2*XYZ + Z] = 0.0f;
+
+	quadVertices[3*XYZ + X] = getPointX(+1024.0f+scr_pos[X], 0.0f);
+	quadVertices[3*XYZ + Y] = getPointY(-2048.0f+scr_pos[Y], 0.0f);
+	quadVertices[3*XYZ + Z] = 0.0f;
+
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+
+	quadVertices[0*XYZ + X] = getPointX(-1024.0f+scr_pos[X], 0.0f);
+	quadVertices[0*XYZ + Y] = getPointY(+1024.0f+scr_pos[Y], 0.0f);
+	quadVertices[0*XYZ + Z] = 0.0f;
+
+	quadVertices[1*XYZ + X] = getPointX(-1024.0f+scr_pos[X], 0.0f);
+	quadVertices[1*XYZ + Y] = getPointY(+2048.0f+scr_pos[Y], 0.0f);
+	quadVertices[1*XYZ + Z] = 0.0f;
+
+	quadVertices[2*XYZ + X] = getPointX(+1024.0f+scr_pos[X], 0.0f);
+	quadVertices[2*XYZ + Y] = getPointY(+2048.0f+scr_pos[Y], 0.0f);
+	quadVertices[2*XYZ + Z] = 0.0f;
+
+	quadVertices[3*XYZ + X] = getPointX(+1024.0f+scr_pos[X], 0.0f);
+	quadVertices[3*XYZ + Y] = getPointY(+1024.0f+scr_pos[Y], 0.0f);
+	quadVertices[3*XYZ + Z] = 0.0f;
+
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+
+	glDisableClientState(GL_VERTEX_ARRAY);
 	glEnable(GL_BLEND);
 }
 
@@ -547,35 +699,54 @@ void	TSKbgFrameDraw(int id)
 
 	z = BASE_Z - cam_pos;
 
-	glDisable(GL_BLEND);
-	glColor4f(0.0f,0.0f,0.0f,1.0f);
-	glBegin(GL_QUADS);
-	glVertex3f(getPointX(-(SCREEN_X / 2), z),
-			   getPointY(-(SCREEN_Y / 2), z),
-			   0.0f);
-	glVertex3f(getPointX(-(SCREEN_Y / 2), z),
-			   getPointY(-(SCREEN_Y / 2), z),
-			   0.0f);
-	glVertex3f(getPointX(-(SCREEN_Y / 2), z),
-			   getPointY(+(SCREEN_Y / 2), z),
-			   0.0f);
-	glVertex3f(getPointX(-(SCREEN_X / 2), z),
-			   getPointY(+(SCREEN_Y / 2), z),
-			   0.0f);
+	GLfloat[4*XYZ]	quadVertices;
 
-	glVertex3f(getPointX(+(SCREEN_Y / 2), z),
-			   getPointY(-(SCREEN_Y / 2), z),
-			   0.0f);
-	glVertex3f(getPointX(+(SCREEN_X / 2), z),
-			   getPointY(-(SCREEN_Y / 2), z),
-			   0.0f);
-	glVertex3f(getPointX(+(SCREEN_X / 2), z),
-			   getPointY(+(SCREEN_Y / 2), z),
-			   0.0f);
-	glVertex3f(getPointX(+(SCREEN_Y / 2), z),
-			   getPointY(+(SCREEN_Y / 2), z),
-			   0.0f);
-	glEnd();
+	glDisable(GL_BLEND);
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glColor4f(0.0f,0.0f,0.0f,1.0f);
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(quadVertices.ptr));
+
+
+	quadVertices[0*XYZ + X] = getPointX(-(SCREEN_X / 2), z);
+	quadVertices[0*XYZ + Y] = getPointY(-(SCREEN_Y / 2), z);
+	quadVertices[0*XYZ + Z] = 0.0f;
+
+	quadVertices[1*XYZ + X] = getPointX(-(SCREEN_Y / 2), z);
+	quadVertices[1*XYZ + Y] = getPointY(-(SCREEN_Y / 2), z);
+	quadVertices[1*XYZ + Z] = 0.0f;
+
+	quadVertices[2*XYZ + X] = getPointX(-(SCREEN_Y / 2), z);
+	quadVertices[2*XYZ + Y] = getPointY(+(SCREEN_Y / 2), z);
+	quadVertices[2*XYZ + Z] = 0.0f;
+
+	quadVertices[3*XYZ + X] = getPointX(-(SCREEN_X / 2), z);
+	quadVertices[3*XYZ + Y] = getPointY(+(SCREEN_Y / 2), z);
+	quadVertices[3*XYZ + Z] = 0.0f;
+
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+
+	quadVertices[0*XYZ + X] = getPointX(+(SCREEN_Y / 2), z);
+	quadVertices[0*XYZ + Y] = getPointY(-(SCREEN_Y / 2), z);
+	quadVertices[0*XYZ + Z] = 0.0f;
+
+	quadVertices[1*XYZ + X] = getPointX(+(SCREEN_X / 2), z);
+	quadVertices[1*XYZ + Y] = getPointY(-(SCREEN_Y / 2), z);
+	quadVertices[1*XYZ + Z] = 0.0f;
+
+	quadVertices[2*XYZ + X] = getPointX(+(SCREEN_X / 2), z);
+	quadVertices[2*XYZ + Y] = getPointY(+(SCREEN_Y / 2), z);
+	quadVertices[2*XYZ + Z] = 0.0f;
+
+	quadVertices[3*XYZ + X] = getPointX(+(SCREEN_Y / 2), z);
+	quadVertices[3*XYZ + Y] = getPointY(+(SCREEN_Y / 2), z);
+	quadVertices[3*XYZ + Z] = 0.0f;
+
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+
+	glDisableClientState(GL_VERTEX_ARRAY);
 	glEnable(GL_BLEND);
 }
 

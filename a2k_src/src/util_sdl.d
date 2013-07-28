@@ -9,7 +9,14 @@
 private	import	std.string;
 private import core.stdc.stdio;
 private	import	SDL;
-private	import	opengl;
+version (USE_GLES) {
+	private	import opengles;
+	private	import opengles_fbo;
+	private	import eglport;
+	alias	glFrustumf	glFrustum;
+} else {
+	private	import	opengl;
+}
 private	import	define;
 
 enum{
@@ -42,6 +49,8 @@ float		cam_pos;
 
 private	int		width = SCREEN_X;
 private	int		height = SCREEN_Y;
+public	int		startx = 0;
+public	int		starty = 0;
 private	float	nearPlane = 0.0f;
 private	float	farPlane = 1000.0f;
 
@@ -54,16 +63,39 @@ int		initSDL()
     }
 
 	Uint32	videoFlags;
-	//videoFlags = SDL_OPENGL | SDL_FULLSCREEN;
-	videoFlags = SDL_OPENGL;
-	//videoFlags = SDL_OPENGL | SDL_RESIZABLE;
-	debug{
-		videoFlags = SDL_OPENGL | SDL_RESIZABLE;
+	version (USE_GLES) {
+		videoFlags = SDL_SWSURFACE;
+	} else {
+		videoFlags = SDL_OPENGL;
 	}
-	primary = SDL_SetVideoMode(width, height, 0, videoFlags);
+	version (PANDORA) {
+		videoFlags |= SDL_FULLSCREEN;
+	} else {
+		debug{
+			videoFlags |= SDL_RESIZABLE;
+		}
+	}
+	int physical_width = width;
+	int physical_height = height;
+	version (PANDORA) {
+		physical_width = 800;
+		physical_height = 480;
+		startx = (800 - width) / 2;
+		starty = (480 - height) / 2;
+	}
+	primary = SDL_SetVideoMode(physical_width, physical_height, 0, videoFlags);
 	if(primary == null){
 		return	0;
-    }
+	}
+	version (USE_GLES) {
+		if (EGL_Open(cast(ushort)physical_width, cast(ushort)physical_height) != 0) {
+			return	0;
+		}
+
+		if (!loadFBOExtension()) {
+			return	0;
+		}
+	}
 
 	offscreen.length = SURFACE_MAX;
 	tex_bank.length  = SURFACE_MAX;
@@ -95,6 +127,9 @@ void	closeSDL()
 		}
 	}
 
+	version (USE_GLES) {
+		EGL_Close();
+	}
 	SDL_ShowCursor(SDL_ENABLE);
 	SDL_Quit();
 }
@@ -106,9 +141,9 @@ void	readSDLtexture(const char[] fname, int bank)
 	if(offscreen[bank]){
 		glGenTextures(1, &tex_bank[bank]);
 		glBindTexture(GL_TEXTURE_2D, tex_bank[bank]);
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, offscreen[bank].w, offscreen[bank].h, 0, GL_RGB, GL_UNSIGNED_BYTE, offscreen[bank].pixels);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, offscreen[bank].w, offscreen[bank].h, 0, GL_RGB, GL_UNSIGNED_BYTE, offscreen[bank].pixels);
+		glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 	}
 }
 
@@ -128,13 +163,17 @@ void	clearSDL()
 void	flipSDL()
 {
 	glFlush();
-	SDL_GL_SwapBuffers();
+	version (USE_GLES) {
+		EGL_SwapBuffers();
+	} else {
+		SDL_GL_SwapBuffers();
+	}
 }
 
 
 void	resizedSDL(int w, int h)
 {
-	glViewport(0, 0, w, h);
+	glViewport(startx, starty, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glFrustum(-nearPlane,nearPlane,
