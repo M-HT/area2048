@@ -63,7 +63,12 @@ void	TSKluminous(int id)
 void	TSKluminousDraw(int id)
 {
 	startRenderToTexture();
-	draw();
+	version (USE_GLES) {
+		// this doesn't make sense, because we are drawing to texture while using the texture
+		//draw();
+	} else {
+		draw();
+	}
 	endRenderToTexture();
 }
 
@@ -73,7 +78,9 @@ static	void	init(float lumi, int startx, int starty, int width, int height)
 {
 	makeLuminousTexture();
 	luminous = lumi;
-	resized(startx, starty, width, height);
+	screenStartx = startx;
+	screenStarty = starty;
+	resized(width, height);
 }
 
 static	void	makeLuminousTexture()
@@ -97,10 +104,8 @@ static	void	makeLuminousTexture()
     }
 }
 
-static	void	resized(int startx, int starty, int width, int height)
+static	void	resized(int width, int height)
 {
-	screenStartx = startx;
-	screenStarty = starty;
 	screenWidth = width;
 	screenHeight = height;
 }

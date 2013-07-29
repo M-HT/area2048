@@ -58,7 +58,7 @@ private	GLuint[]	tex_bank;
 
 int		initSDL()
 {
-	if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK) < 0){
+	if(SDL_Init(SDL_INIT_VIDEO) < 0){
 		return	0;
     }
 
@@ -176,10 +176,12 @@ void	resizedSDL(int w, int h)
 	glViewport(startx, starty, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glFrustum(-nearPlane,nearPlane,
-			  -nearPlane * h / w,
-			   nearPlane * h / w,
-			  0.1f, farPlane);
+	if (nearPlane != 0.0f) {
+		glFrustum(-nearPlane,nearPlane,
+				  -nearPlane * h / w,
+				   nearPlane * h / w,
+				  0.1f, farPlane);
+	}
 	glMatrixMode(GL_MODELVIEW);
 }
 

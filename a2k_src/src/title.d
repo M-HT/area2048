@@ -126,34 +126,60 @@ void	TSKtitleDraw(int id)
 	glEnable(GL_TEXTURE_2D);
 	bindSDLtexture(GRP_TITLE);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glBegin(GL_TRIANGLE_FAN);
-	pos[X] = -(SCREEN_Y / 2 - 128) + (-128.0f);
-	pos[Y] = +(SCREEN_Y / 2 - 128) + (+128.0f);
-	glTexCoord2f(0, 0);
-	glVertex3f(getPointX(pos[X], z),getPointY(pos[Y], z), 0);
-	pos[X] = -(SCREEN_Y / 2 - 128) + (+128.0f);
-	pos[Y] = +(SCREEN_Y / 2 - 128) + (+128.0f);
-	glTexCoord2f(1, 0);
-	glVertex3f(getPointX(pos[X], z),getPointY(pos[Y], z), 0);
-	pos[X] = -(SCREEN_Y / 2 - 128) + (+128.0f);
-	pos[Y] = +(SCREEN_Y / 2 - 128) + (-128.0f);
-	glTexCoord2f(1, 1);
-	glVertex3f(getPointX(pos[X], z),getPointY(pos[Y], z), 0);
-	pos[X] = -(SCREEN_Y / 2 - 128) + (-128.0f);
-	pos[Y] = +(SCREEN_Y / 2 - 128) + (-128.0f);
-	glTexCoord2f(0, 1);
-	glVertex3f(getPointX(pos[X], z),getPointY(pos[Y], z), 0);
-	glEnd();
+	{
+		static	const	int	titleNumVertices = 4;
+		GLfloat[XYZ*titleNumVertices]	titleVertices;
+		static	const	GLfloat[XY*titleNumVertices]	titleTexCoords = [
+			0, 0,
+			1, 0,
+			1, 1,
+			0, 1
+		];
+
+		pos[X] = -(SCREEN_Y / 2 - 128) + (-128.0f);
+		pos[Y] = +(SCREEN_Y / 2 - 128) + (+128.0f);
+		titleVertices[0*XYZ + X] = getPointX(pos[X], z);
+		titleVertices[0*XYZ + Y] = getPointY(pos[Y], z);
+		titleVertices[0*XYZ + Z] = 0.0f;
+
+		pos[X] = -(SCREEN_Y / 2 - 128) + (+128.0f);
+		pos[Y] = +(SCREEN_Y / 2 - 128) + (+128.0f);
+		titleVertices[1*XYZ + X] = getPointX(pos[X], z);
+		titleVertices[1*XYZ + Y] = getPointY(pos[Y], z);
+		titleVertices[1*XYZ + Z] = 0.0f;
+
+		pos[X] = -(SCREEN_Y / 2 - 128) + (+128.0f);
+		pos[Y] = +(SCREEN_Y / 2 - 128) + (-128.0f);
+		titleVertices[2*XYZ + X] = getPointX(pos[X], z);
+		titleVertices[2*XYZ + Y] = getPointY(pos[Y], z);
+		titleVertices[2*XYZ + Z] = 0.0f;
+
+		pos[X] = -(SCREEN_Y / 2 - 128) + (-128.0f);
+		pos[Y] = +(SCREEN_Y / 2 - 128) + (-128.0f);
+		titleVertices[3*XYZ + X] = getPointX(pos[X], z);
+		titleVertices[3*XYZ + Y] = getPointY(pos[Y], z);
+		titleVertices[3*XYZ + Z] = 0.0f;
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		glVertexPointer(3, GL_FLOAT, 0, cast(void *)(titleVertices.ptr));
+		glTexCoordPointer(2, GL_FLOAT, 0, cast(void *)(titleTexCoords.ptr));
+		glDrawArrays(GL_TRIANGLE_FAN, 0, titleNumVertices);
+
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		glDisableClientState(GL_VERTEX_ARRAY);
+	}
 	glDisable(GL_TEXTURE_2D);
-	glBegin(GL_QUADS);
-	glColor3f(0.75f, 0.75f, 0.75f);
+	// begin text drawing
+	glColor4f(0.75f, 0.75f, 0.75f, 1.0f);
 	str_buf = "HELLO WORLD PROJECT 2004".dup;
 	pos[X] = +(SCREEN_Y / 2) - 16.0f - getWidthASCII(str_buf, 0.5f);
 	pos[Y] = -(SCREEN_Y / 2) + 24.0f;
 	pos[X]  = ceil(pos[X]);
 	pos[Y]  = ceil(pos[Y]);
 	drawASCII(str_buf, pos[X], pos[Y], 0.5f);
-	glColor3f(1.0f, 1.0f, 1.0f);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 	switch(TskBuf[id].step){
 		case	1:
@@ -390,7 +416,7 @@ void	TSKtitleDraw(int id)
 		default:
 			break;
 	}
-	glEnd();
+	// end text drawing
 
 }
 

@@ -353,10 +353,20 @@ void	drawASCII(const char[] str,float px,float py,float s)
 	float		nx,ny,nz;
 	float[XY]	pos1;
 	float[XY]	pos2;
+	GLfloat[4*XYZ]	quadVertices;
 
 	nx = px;
 	ny = py;
 	nz = BASE_Z - cam_pos;
+
+	quadVertices[0*XYZ + Z] = 0.0f;
+	quadVertices[1*XYZ + Z] = 0.0f;
+	quadVertices[2*XYZ + Z] = 0.0f;
+	quadVertices[3*XYZ + Z] = 0.0f;
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(quadVertices.ptr));
 
 	for(int i = 0; i < str.length; i++){
 		if((word = serchASCIIdict(str[i])) >= 0){
@@ -365,22 +375,26 @@ void	drawASCII(const char[] str,float px,float py,float s)
 				pos1[Y] = ascii_font[word][j+1] * s;
 				pos2[X] = ascii_font[word][j+2] * s;
 				pos2[Y] = ascii_font[word][j+3] * s;
-				glVertex3f(getPointX(nx+pos1[X], nz),
-						   getPointY(ny+pos2[Y], nz),
-						   0.0f);
-				glVertex3f(getPointX(nx+pos1[X], nz),
-						   getPointY(ny+pos1[Y], nz),
-						   0.0f);
-				glVertex3f(getPointX(nx+pos2[X], nz),
-						   getPointY(ny+pos1[Y], nz),
-						   0.0f);
-				glVertex3f(getPointX(nx+pos2[X], nz),
-						   getPointY(ny+pos2[Y], nz),
-						   0.0f);
+
+				quadVertices[0*XYZ + X] = getPointX(nx+pos1[X], nz);
+				quadVertices[0*XYZ + Y] = getPointY(ny+pos2[Y], nz);
+
+				quadVertices[1*XYZ + X] = getPointX(nx+pos1[X], nz);
+				quadVertices[1*XYZ + Y] = getPointY(ny+pos1[Y], nz);
+
+				quadVertices[2*XYZ + X] = getPointX(nx+pos2[X], nz);
+				quadVertices[2*XYZ + Y] = getPointY(ny+pos1[Y], nz);
+
+				quadVertices[3*XYZ + X] = getPointX(nx+pos2[X], nz);
+				quadVertices[3*XYZ + Y] = getPointY(ny+pos2[Y], nz);
+
+				glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 			}
 			nx += ASC_SIZE * s;
 		}
 	}
+
+	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 

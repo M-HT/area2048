@@ -65,20 +65,19 @@ void	TSKsystemDraw(int id)
 	float gauge;
 
 	/* 文字情報描画 */
-	glBegin(GL_QUADS);
-	glColor3f(1.0f,1.0f,1.0f);
+	glColor4f(1.0f,1.0f,1.0f,1.0f);
 	str_buf  = "SCORE ".dup;
 	str_buf ~= to!string(score);
 	drawASCII(str_buf, -(SCREEN_S / 2) + 8, +(SCREEN_S / 2) - 8 - 12 * 0, 0.50f);
 	str_buf  = "L:".dup;
 	str_buf ~= to!string(left);
 	drawASCII(str_buf, -(SCREEN_S / 2) + 8, +(SCREEN_S / 2) - 8 - 12 * 1, 0.50f);
-	if(BombTST()) glColor3f(1.0f,1.0f,1.0f);
-	else		  glColor3f(0.5f,0.5f,0.5f);
+	if(BombTST()) glColor4f(1.0f,1.0f,1.0f,1.0f);
+	else		  glColor4f(0.5f,0.5f,0.5f,1.0f);
 	str_buf  = "W:".dup;
 	str_buf ~= to!string(bomb_lv);
 	drawASCII(str_buf, -(SCREEN_S / 2) + 8 + (getWidthASCII("     ",0.5f)), +(SCREEN_S / 2) - 8 - 12 * 1, 0.50f);
-	glColor3f(1.0f,1.0f,1.0f);
+	glColor4f(1.0f,1.0f,1.0f,1.0f);
 	str_buf  = "BONUS ".dup;
 	str_buf ~= to!string(bomb_bonus);
 	drawASCII(str_buf, -(SCREEN_S / 2) + 8, +(SCREEN_S / 2) - 8 - 12 * 2, 0.50f);
@@ -104,7 +103,6 @@ void	TSKsystemDraw(int id)
 	if(tmsec < 10) str_buf ~= "0";
 	str_buf ~= to!string(tmsec);
 	drawASCII(str_buf, -(SCREEN_S / 2) + 8 + (getWidthASCII("         ",0.5f)), -(SCREEN_S / 2) + 20, 0.50f);
-	glEnd();
 
 	/* ボムゲージ描画 */
 	z = BASE_Z - cam_pos;
@@ -112,21 +110,29 @@ void	TSKsystemDraw(int id)
 	base[X] = -(SCREEN_S / 2) + 4 + getWidthASCII("         ",0.5f);
 	base[Y] = +(SCREEN_S / 2) - 8 - 12 * 1;
 
+	GLfloat[4*XYZ]	quadVertices;
+
+	quadVertices[0*XYZ + X] = getPointX(base[X]+  0.0f, z);
+	quadVertices[0*XYZ + Y] = getPointY(base[Y]-  8.0f, z);
+	quadVertices[0*XYZ + Z] = 0.0f;
+
+	quadVertices[1*XYZ + X] = getPointX(base[X]+  0.0f, z);
+	quadVertices[1*XYZ + Y] = getPointY(base[Y]+  0.0f, z);
+	quadVertices[1*XYZ + Z] = 0.0f;
+
+	quadVertices[2*XYZ + X] = getPointX(base[X]+248.0f, z);
+	quadVertices[2*XYZ + Y] = getPointY(base[Y]+  0.0f, z);
+	quadVertices[2*XYZ + Z] = 0.0f;
+
+	quadVertices[3*XYZ + X] = getPointX(base[X]+248.0f, z);
+	quadVertices[3*XYZ + Y] = getPointY(base[Y]-  8.0f, z);
+	quadVertices[3*XYZ + Z] = 0.0f;
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+
 	glColor4f(0.25f,0.25f,0.25f,0.25f);
-	glBegin(GL_QUADS);
-	glVertex3f(getPointX(base[X]+  0.0f, z),
-			   getPointY(base[Y]-  8.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+  0.0f, z),
-			   getPointY(base[Y]+  0.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+248.0f, z),
-			   getPointY(base[Y]+  0.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+248.0f, z),
-			   getPointY(base[Y]-  8.0f, z),
-			   0.0f);
-	glEnd();
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(quadVertices.ptr));
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 	if(bomb != (BOMB_ONE * BOMB_MAX)){
 		gauge  = 248.0f * (bomb % BOMB_ONE);
@@ -135,37 +141,21 @@ void	TSKsystemDraw(int id)
 		gauge = 248.0f;
 	}
 
+	quadVertices[2*XYZ + X] = getPointX(base[X]+ gauge, z);
+	quadVertices[3*XYZ + X] = getPointX(base[X]+ gauge, z);
+
 	glColor4f(0.75f,0.75f,0.25f,0.50f);
-	glBegin(GL_QUADS);
-	glVertex3f(getPointX(base[X]+  0.0f, z),
-			   getPointY(base[Y]-  8.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+  0.0f, z),
-			   getPointY(base[Y]+  0.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+ gauge, z),
-			   getPointY(base[Y]+  0.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+ gauge, z),
-			   getPointY(base[Y]-  8.0f, z),
-			   0.0f);
-	glEnd();
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(quadVertices.ptr));
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+	quadVertices[2*XYZ + X] = getPointX(base[X]+248.0f, z);
+	quadVertices[3*XYZ + X] = getPointX(base[X]+248.0f, z);
 
 	glColor4f(1.0f,1.0f,1.0f,0.75f);
-	glBegin(GL_LINE_LOOP);
-	glVertex3f(getPointX(base[X]+  0.0f, z),
-			   getPointY(base[Y]-  8.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+  0.0f, z),
-			   getPointY(base[Y]+  0.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+248.0f, z),
-			   getPointY(base[Y]+  0.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+248.0f, z),
-			   getPointY(base[Y]-  8.0f, z),
-			   0.0f);
-	glEnd();
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(quadVertices.ptr));
+	glDrawArrays(GL_LINE_LOOP, 0, 4);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 void	TSKsystemExit(int id)
@@ -197,42 +187,38 @@ void	TSKradarDraw(int id)
 	float[XY] pos;
 	float[XY] col;
 	int	prev;
+	GLfloat[4*XYZ]	quadVertices;
 
 	z = BASE_Z - cam_pos;
 
-	/* レーダーBG表示 */
-	glColor4f(0.05f,0.50f,0.05f,0.25f);
-	glBegin(GL_QUADS);
-	glVertex3f(getPointX(TskBuf[id].px-64.0f, z),
-			   getPointY(TskBuf[id].py-64.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(TskBuf[id].px-64.0f, z),
-			   getPointY(TskBuf[id].py+64.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(TskBuf[id].px+64.0f, z),
-			   getPointY(TskBuf[id].py+64.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(TskBuf[id].px+64.0f, z),
-			   getPointY(TskBuf[id].py-64.0f, z),
-			   0.0f);
-	glEnd();
-	glColor4f(1.0f,1.0f,1.0f,0.5f);
-	glBegin(GL_LINE_LOOP);
-	glVertex3f(getPointX(TskBuf[id].px-64.0f, z),
-			   getPointY(TskBuf[id].py-64.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(TskBuf[id].px-64.0f, z),
-			   getPointY(TskBuf[id].py+64.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(TskBuf[id].px+64.0f, z),
-			   getPointY(TskBuf[id].py+64.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(TskBuf[id].px+64.0f, z),
-			   getPointY(TskBuf[id].py-64.0f, z),
-			   0.0f);
-	glEnd();
+	glEnableClientState(GL_VERTEX_ARRAY);
 
-	glBegin(GL_QUADS);
+	/* レーダーBG表示 */
+	quadVertices[0*XYZ + X] = getPointX(TskBuf[id].px-64.0f, z);
+	quadVertices[0*XYZ + Y] = getPointY(TskBuf[id].py-64.0f, z);
+	quadVertices[0*XYZ + Z] = 0.0f;
+
+	quadVertices[1*XYZ + X] = getPointX(TskBuf[id].px-64.0f, z);
+	quadVertices[1*XYZ + Y] = getPointY(TskBuf[id].py+64.0f, z);
+	quadVertices[1*XYZ + Z] = 0.0f;
+
+	quadVertices[2*XYZ + X] = getPointX(TskBuf[id].px+64.0f, z);
+	quadVertices[2*XYZ + Y] = getPointY(TskBuf[id].py+64.0f, z);
+	quadVertices[2*XYZ + Z] = 0.0f;
+
+	quadVertices[3*XYZ + X] = getPointX(TskBuf[id].px+64.0f, z);
+	quadVertices[3*XYZ + Y] = getPointY(TskBuf[id].py-64.0f, z);
+	quadVertices[3*XYZ + Z] = 0.0f;
+
+	glColor4f(0.05f,0.50f,0.05f,0.25f);
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(quadVertices.ptr));
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+	glColor4f(1.0f,1.0f,1.0f,0.5f);
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(quadVertices.ptr));
+	glDrawArrays(GL_LINE_LOOP, 0, 4);
+
+
 	/* 敵表示 */
 	for(int i = TskIndex[GROUP_02]; i != -1; i = prev){
 		glColor4f(1.0f,0.0f,0.0f,TskBuf[i].alpha);
@@ -242,18 +228,21 @@ void	TSKradarDraw(int id)
 			col[Y] = TskBuf[i].cy / 16.0f;
 			pos[X] = TskBuf[id].px - TskBuf[i].px / 16.0f;
 			pos[Y] = TskBuf[id].py - TskBuf[i].py / 16.0f;
-			glVertex3f(getPointX(pos[X]-col[X], z),
-					   getPointY(pos[Y]+col[Y], z),
-					   0.0f);
-			glVertex3f(getPointX(pos[X]-col[X], z),
-					   getPointY(pos[Y]-col[Y], z),
-					   0.0f);
-			glVertex3f(getPointX(pos[X]+col[X], z),
-					   getPointY(pos[Y]-col[Y], z),
-					   0.0f);
-			glVertex3f(getPointX(pos[X]+col[X], z),
-					   getPointY(pos[Y]+col[Y], z),
-					   0.0f);
+
+			quadVertices[0*XYZ + X] = getPointX(pos[X]-col[X], z);
+			quadVertices[0*XYZ + Y] = getPointY(pos[Y]+col[Y], z);
+
+			quadVertices[1*XYZ + X] = getPointX(pos[X]-col[X], z);
+			quadVertices[1*XYZ + Y] = getPointY(pos[Y]-col[Y], z);
+
+			quadVertices[2*XYZ + X] = getPointX(pos[X]+col[X], z);
+			quadVertices[2*XYZ + Y] = getPointY(pos[Y]-col[Y], z);
+
+			quadVertices[3*XYZ + X] = getPointX(pos[X]+col[X], z);
+			quadVertices[3*XYZ + Y] = getPointY(pos[Y]+col[Y], z);
+
+			glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(quadVertices.ptr));
+			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 		}
 	}
 	/* 自機表示 */
@@ -261,19 +250,23 @@ void	TSKradarDraw(int id)
 	if(TskBuf[ship_id].tskid != 0){
 		pos[X] = TskBuf[id].px - TskBuf[ship_id].px / 16.0f;
 		pos[Y] = TskBuf[id].py - TskBuf[ship_id].py / 16.0f;
-			glVertex3f(getPointX(pos[X]-1.0f, z),
-					   getPointY(pos[Y]+1.0f, z),
-					   0.0f);
-			glVertex3f(getPointX(pos[X]-1.0f, z),
-					   getPointY(pos[Y]-1.0f, z),
-					   0.0f);
-			glVertex3f(getPointX(pos[X]+1.0f, z),
-					   getPointY(pos[Y]-1.0f, z),
-					   0.0f);
-			glVertex3f(getPointX(pos[X]+1.0f, z),
-					   getPointY(pos[Y]+1.0f, z),
-					   0.0f);
+
+		quadVertices[0*XYZ + X] = getPointX(pos[X]-1.0f, z);
+		quadVertices[0*XYZ + Y] = getPointY(pos[Y]+1.0f, z);
+
+		quadVertices[1*XYZ + X] = getPointX(pos[X]-1.0f, z);
+		quadVertices[1*XYZ + Y] = getPointY(pos[Y]-1.0f, z);
+
+		quadVertices[2*XYZ + X] = getPointX(pos[X]+1.0f, z);
+		quadVertices[2*XYZ + Y] = getPointY(pos[Y]-1.0f, z);
+
+		quadVertices[3*XYZ + X] = getPointX(pos[X]+1.0f, z);
+		quadVertices[3*XYZ + Y] = getPointY(pos[Y]+1.0f, z);
+
+		glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(quadVertices.ptr));
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 	}
+	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 void	TSKstgStartMsg(int id)
@@ -323,7 +316,6 @@ void	TSKstgStartMsgDraw(int id)
 
 	if(g_step != GSTEP_DEMO){
 		glColor4f(1.0f,1.0f,1.0f,TskBuf[id].nx);
-		glBegin(GL_QUADS);
 		str_buf  = "AREA ".dup;
 		str_buf ~= to!string(area_num + 1);
 		px = getWidthASCII(str_buf, 0.5f);
@@ -349,7 +341,6 @@ void	TSKstgStartMsgDraw(int id)
 		}
 	}else{
 		glColor4f(1.0f,1.0f,1.0f,1.0f);
-		glBegin(GL_QUADS);
 		str_buf = "DEMO PLAY".dup;
 		px = getWidthASCII(str_buf, 0.5f);
 		px /= 2.0f;
@@ -357,7 +348,6 @@ void	TSKstgStartMsgDraw(int id)
 		px  = ceil(px);
 		drawASCII(str_buf, px, +32.0f, 0.5f);
 	}
-	glEnd();
 }
 
 void	TSKstgStartMsgEffect(int id)
@@ -394,7 +384,6 @@ void	TSKstgStartMsgEffectDraw(int id)
 
 	if(g_step != GSTEP_DEMO){
 		glColor4f(1.0f,1.0f,1.0f,TskBuf[id].ny);
-		glBegin(GL_QUADS);
 		str_buf  = "AREA ".dup;
 		str_buf ~= to!string(area_num + 1);
 		pos[X] = getWidthASCII(str_buf, TskBuf[id].sx);
@@ -421,7 +410,6 @@ void	TSKstgStartMsgEffectDraw(int id)
 			pos[Y]  = -10.0f + ASC_SIZE * (TskBuf[id].wait / 15.0f);
 			drawASCII(str_buf, pos[X], pos[Y], TskBuf[id].sx);
 		}
-		glEnd();
 	}
 }
 
@@ -500,7 +488,6 @@ void	TSKstgClearMsgDraw(int id)
 	if(g_step == GSTEP_DEMO) return;
 
 	glColor4f(1.0f,1.0f,1.0f,TskBuf[id].nx);
-	glBegin(GL_QUADS);
 	if(area_num != 5 && scene_num != SCENE_10) str_buf  = "SCENE CLEAR".dup;
 	else									   str_buf  = "MISSION COMPLETE".dup;
 	px = getWidthASCII(str_buf, 0.5f);
@@ -573,7 +560,6 @@ void	TSKstgClearMsgDraw(int id)
 		py -= +10.0f;
 		drawASCII(str_buf, px, py, 0.5f);
 	}
-	glEnd();
 }
 
 void	addScore(int add_score)
@@ -623,57 +609,49 @@ void	TSKgaugeDraw(int id)
 	base[X] = TskBuf[id].tx;
 	base[Y] = TskBuf[id].ty;
 
+	GLfloat[4*XYZ]	quadVertices;
+
+	quadVertices[0*XYZ + X] = getPointX(base[X]+         0.0f, z);
+	quadVertices[0*XYZ + Y] = getPointY(base[Y]-TskBuf[id].vy, z);
+	quadVertices[0*XYZ + Z] = 0.0f;
+
+	quadVertices[1*XYZ + X] = getPointX(base[X]+         0.0f, z);
+	quadVertices[1*XYZ + Y] = getPointY(base[Y]+         0.0f, z);
+	quadVertices[1*XYZ + Z] = 0.0f;
+
+	quadVertices[2*XYZ + X] = getPointX(base[X]+TskBuf[id].vx, z);
+	quadVertices[2*XYZ + Y] = getPointY(base[Y]+         0.0f, z);
+	quadVertices[2*XYZ + Z] = 0.0f;
+
+	quadVertices[3*XYZ + X] = getPointX(base[X]+TskBuf[id].vx, z);
+	quadVertices[3*XYZ + Y] = getPointY(base[Y]-TskBuf[id].vy, z);
+	quadVertices[3*XYZ + Z] = 0.0f;
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+
 	glColor4f(0.25f,0.25f,0.25f,0.25f);
-	glBegin(GL_QUADS);
-	glVertex3f(getPointX(base[X]+         0.0f, z),
-			   getPointY(base[Y]-TskBuf[id].vy, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+         0.0f, z),
-			   getPointY(base[Y]+         0.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+TskBuf[id].vy, z),
-			   getPointY(base[Y]+         0.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+TskBuf[id].vx, z),
-			   getPointY(base[Y]-TskBuf[id].vy, z),
-			   0.0f);
-	glEnd();
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(quadVertices.ptr));
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 	energy  = TskBuf[id].energy;
 	energy /= TskBuf[id].cnt;
 	energy *= TskBuf[id].vx;
 
+	quadVertices[2*XYZ + X] = getPointX(base[X]+       energy, z);
+	quadVertices[3*XYZ + X] = getPointX(base[X]+       energy, z);
+
 	glColor4f(0.25f,0.25f,0.75f,0.50f);
-	glBegin(GL_QUADS);
-	glVertex3f(getPointX(base[X]+         0.0f, z),
-			   getPointY(base[Y]-TskBuf[id].vy, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+         0.0f, z),
-			   getPointY(base[Y]+         0.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+       energy, z),
-			   getPointY(base[Y]+         0.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+       energy, z),
-			   getPointY(base[Y]-TskBuf[id].vy, z),
-			   0.0f);
-	glEnd();
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(quadVertices.ptr));
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+	quadVertices[2*XYZ + X] = getPointX(base[X]+TskBuf[id].vx, z);
+	quadVertices[3*XYZ + X] = getPointX(base[X]+TskBuf[id].vx, z);
 
 	glColor4f(1.0f,1.0f,1.0f,0.50f);
-	glBegin(GL_LINE_LOOP);
-	glVertex3f(getPointX(base[X]+         0.0f, z),
-			   getPointY(base[Y]-TskBuf[id].vy, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+         0.0f, z),
-			   getPointY(base[Y]+         0.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+TskBuf[id].vx, z),
-			   getPointY(base[Y]+         0.0f, z),
-			   0.0f);
-	glVertex3f(getPointX(base[X]+TskBuf[id].vx, z),
-			   getPointY(base[Y]-TskBuf[id].vy, z),
-			   0.0f);
-	glEnd();
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(quadVertices.ptr));
+	glDrawArrays(GL_LINE_LOOP, 0, 4);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
 
 }
 
@@ -717,14 +695,12 @@ void	TSKgameoverDraw(int id)
 	float px;
 
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
-	glBegin(GL_QUADS);
 	str_buf = "GAME OVER".dup;
 	px = getWidthASCII(str_buf, 0.5f);
 	px /= 2.0f;
 	px *= -1.0f;
 	px  = ceil(px);
 	drawASCII(str_buf, px, +5.0f, 0.5f);
-	glEnd();
 }
 
 void	TSKextend(int id)
@@ -825,6 +801,8 @@ void	TSKlockDraw(int id)
 	float[XY] base;
 	float z;
 	float size,lx,ly;
+	GLfloat[4*XYZ]	quadVertices;
+	GLfloat[20*XYZ]	lineVertices;
 
 	if(ship_lock == 0) return;
 
@@ -834,91 +812,116 @@ void	TSKlockDraw(int id)
 	base[Y] = scr_pos[Y] - TskBuf[trg].py;
 
 	size = 40.0f * TskBuf[id].sx;
-	glColor4f(0.50f,0.50f,0.50f,0.75f);
-	glBegin(GL_QUADS);
-	glVertex3f(getPointX(base[X]-size, 0.0f),
-			   getPointY(base[Y]-size, 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X]-size, 0.0f),
-			   getPointY(base[Y]+size, 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X]+size, 0.0f),
-			   getPointY(base[Y]+size, 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X]+size, 0.0f),
-			   getPointY(base[Y]-size, 0.0f),
-			   z);
-	glEnd();
 
-	glColor4f(1.0f,1.0f,1.0f,1.50f);
+	quadVertices[0*XYZ + X] = getPointX(base[X]-size, 0.0f);
+	quadVertices[0*XYZ + Y] = getPointY(base[Y]-size, 0.0f);
+	quadVertices[0*XYZ + Z] = z;
+
+	quadVertices[1*XYZ + X] = getPointX(base[X]-size, 0.0f);
+	quadVertices[1*XYZ + Y] = getPointY(base[Y]+size, 0.0f);
+	quadVertices[1*XYZ + Z] = z;
+
+	quadVertices[2*XYZ + X] = getPointX(base[X]+size, 0.0f);
+	quadVertices[2*XYZ + Y] = getPointY(base[Y]+size, 0.0f);
+	quadVertices[2*XYZ + Z] = z;
+
+	quadVertices[3*XYZ + X] = getPointX(base[X]+size, 0.0f);
+	quadVertices[3*XYZ + Y] = getPointY(base[Y]-size, 0.0f);
+	quadVertices[3*XYZ + Z] = z;
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glColor4f(0.50f,0.50f,0.50f,0.75f);
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(quadVertices.ptr));
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
 
 	lx = 24.0f * TskBuf[id].sx;
 	ly = 24.0f * TskBuf[id].sx;
-	glBegin(GL_LINES);
 	/* 左下 */
-	glVertex3f(getPointX(base[X]-size, 0.0f),
-			   getPointY(base[Y]-size+ly, 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X]-size, 0.0f),
-			   getPointY(base[Y]-size, 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X]-size, 0.0f),
-			   getPointY(base[Y]-size, 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X]-size+lx, 0.0f),
-			   getPointY(base[Y]-size, 0.0f),
-			   z);
+	lineVertices[0*XYZ + X] = getPointX(base[X]-size, 0.0f);
+	lineVertices[0*XYZ + Y] = getPointY(base[Y]-size+ly, 0.0f);
+	lineVertices[0*XYZ + Z] = z;
+
+	lineVertices[1*XYZ + X] = getPointX(base[X]-size, 0.0f);
+	lineVertices[1*XYZ + Y] = getPointY(base[Y]-size, 0.0f);
+	lineVertices[1*XYZ + Z] = z;
+
+	lineVertices[2*XYZ + X] = getPointX(base[X]-size, 0.0f);
+	lineVertices[2*XYZ + Y] = getPointY(base[Y]-size, 0.0f);
+	lineVertices[2*XYZ + Z] = z;
+
+	lineVertices[3*XYZ + X] = getPointX(base[X]-size+lx, 0.0f);
+	lineVertices[3*XYZ + Y] = getPointY(base[Y]-size, 0.0f);
+	lineVertices[3*XYZ + Z] = z;
 	/* 左上 */
-	glVertex3f(getPointX(base[X]-size, 0.0f),
-			   getPointY(base[Y]+size-ly, 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X]-size, 0.0f),
-			   getPointY(base[Y]+size, 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X]-size, 0.0f),
-			   getPointY(base[Y]+size, 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X]-size+lx, 0.0f),
-			   getPointY(base[Y]+size, 0.0f),
-			   z);
+	lineVertices[4*XYZ + X] = getPointX(base[X]-size, 0.0f);
+	lineVertices[4*XYZ + Y] = getPointY(base[Y]+size-ly, 0.0f);
+	lineVertices[4*XYZ + Z] = z;
+
+	lineVertices[5*XYZ + X] = getPointX(base[X]-size, 0.0f);
+	lineVertices[5*XYZ + Y] = getPointY(base[Y]+size, 0.0f);
+	lineVertices[5*XYZ + Z] = z;
+
+	lineVertices[6*XYZ + X] = getPointX(base[X]-size, 0.0f);
+	lineVertices[6*XYZ + Y] = getPointY(base[Y]+size, 0.0f);
+	lineVertices[6*XYZ + Z] = z;
+
+	lineVertices[7*XYZ + X] = getPointX(base[X]-size+lx, 0.0f);
+	lineVertices[7*XYZ + Y] = getPointY(base[Y]+size, 0.0f);
+	lineVertices[7*XYZ + Z] = z;
 	/* 右下 */
-	glVertex3f(getPointX(base[X]+size, 0.0f),
-			   getPointY(base[Y]-size+ly, 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X]+size, 0.0f),
-			   getPointY(base[Y]-size, 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X]+size, 0.0f),
-			   getPointY(base[Y]-size, 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X]+size-lx, 0.0f),
-			   getPointY(base[Y]-size, 0.0f),
-			   z);
+	lineVertices[8*XYZ + X] = getPointX(base[X]+size, 0.0f);
+	lineVertices[8*XYZ + Y] = getPointY(base[Y]-size+ly, 0.0f);
+	lineVertices[8*XYZ + Z] = z;
+
+	lineVertices[9*XYZ + X] = getPointX(base[X]+size, 0.0f);
+	lineVertices[9*XYZ + Y] = getPointY(base[Y]-size, 0.0f);
+	lineVertices[9*XYZ + Z] = z;
+
+	lineVertices[10*XYZ + X] = getPointX(base[X]+size, 0.0f);
+	lineVertices[10*XYZ + Y] = getPointY(base[Y]-size, 0.0f);
+	lineVertices[10*XYZ + Z] = z;
+
+	lineVertices[11*XYZ + X] = getPointX(base[X]+size-lx, 0.0f);
+	lineVertices[11*XYZ + Y] = getPointY(base[Y]-size, 0.0f);
+	lineVertices[11*XYZ + Z] = z;
 	/* 右上 */
-	glVertex3f(getPointX(base[X]+size, 0.0f),
-			   getPointY(base[Y]+size-ly, 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X]+size, 0.0f),
-			   getPointY(base[Y]+size, 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X]+size, 0.0f),
-			   getPointY(base[Y]+size, 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X]+size-lx, 0.0f),
-			   getPointY(base[Y]+size, 0.0f),
-			   z);
+	lineVertices[12*XYZ + X] = getPointX(base[X]+size, 0.0f);
+	lineVertices[12*XYZ + Y] = getPointY(base[Y]+size-ly, 0.0f);
+	lineVertices[12*XYZ + Z] = z;
+
+	lineVertices[13*XYZ + X] = getPointX(base[X]+size, 0.0f);
+	lineVertices[13*XYZ + Y] = getPointY(base[Y]+size, 0.0f);
+	lineVertices[13*XYZ + Z] = z;
+
+	lineVertices[14*XYZ + X] = getPointX(base[X]+size, 0.0f);
+	lineVertices[14*XYZ + Y] = getPointY(base[Y]+size, 0.0f);
+	lineVertices[14*XYZ + Z] = z;
+
+	lineVertices[15*XYZ + X] = getPointX(base[X]+size-lx, 0.0f);
+	lineVertices[15*XYZ + Y] = getPointY(base[Y]+size, 0.0f);
+	lineVertices[15*XYZ + Z] = z;
 	/* クロス */
-	glVertex3f(getPointX(base[X]-lx, 0.0f),
-			   getPointY(base[Y], 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X]+lx, 0.0f),
-			   getPointY(base[Y], 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X], 0.0f),
-			   getPointY(base[Y]-ly, 0.0f),
-			   z);
-	glVertex3f(getPointX(base[X], 0.0f),
-			   getPointY(base[Y]+ly, 0.0f),
-			   z);
-	glEnd();
+	lineVertices[16*XYZ + X] = getPointX(base[X]-lx, 0.0f);
+	lineVertices[16*XYZ + Y] = getPointY(base[Y], 0.0f);
+	lineVertices[16*XYZ + Z] = z;
+
+	lineVertices[17*XYZ + X] = getPointX(base[X]+lx, 0.0f);
+	lineVertices[17*XYZ + Y] = getPointY(base[Y], 0.0f);
+	lineVertices[17*XYZ + Z] = z;
+
+	lineVertices[18*XYZ + X] = getPointX(base[X], 0.0f);
+	lineVertices[18*XYZ + Y] = getPointY(base[Y]-ly, 0.0f);
+	lineVertices[18*XYZ + Z] = z;
+
+	lineVertices[19*XYZ + X] = getPointX(base[X], 0.0f);
+	lineVertices[19*XYZ + Y] = getPointY(base[Y]+ly, 0.0f);
+	lineVertices[19*XYZ + Z] = z;
+
+	glColor4f(1.0f,1.0f,1.0f,1.50f);
+	glVertexPointer(XYZ, GL_FLOAT, 0, cast(void *)(lineVertices.ptr));
+	glDrawArrays(GL_LINES, 0, 20);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
 }
