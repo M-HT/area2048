@@ -201,6 +201,10 @@ void	TSKtitleDraw(int id)
 	pos[X]  = ceil(pos[X]);
 	pos[Y]  = ceil(pos[Y]);
 	drawASCII(str_buf, pos[X], pos[Y], 0.5f);
+version (PANDORA) {
+	drawASCII("ENTRY FOR THE", -226, -160, 0.5f);
+	drawASCII("ALIVE AND KICKING CODING COMPETITION 2013-2014", -190, -180, 0.5f);
+}
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 	switch(TskBuf[id].step){
