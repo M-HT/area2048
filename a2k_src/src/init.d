@@ -146,7 +146,11 @@ private	void	readConfig()
 		}
 		int read_data[3];
 		fd.rawRead(read_data);
-		pad_type = read_data[0];
+		version (PANDORA) {
+			pad_type = 0;
+		} else {
+			pad_type = read_data[0];
+		}
 		vol_se = read_data[1];
 		vol_music = read_data[2];
 		volumeSNDse(vol_se);
