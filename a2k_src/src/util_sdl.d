@@ -108,7 +108,7 @@ int		initSDL()
     resizedSDL(width, height);
 	SDL_ShowCursor(SDL_DISABLE);
 
-	SDL_WM_SetCaption(cast(char*)PROJECT_NAME, null);
+	SDL_WM_SetCaption(toStringz(PROJECT_NAME), null);
 
 	return	1;
 }
