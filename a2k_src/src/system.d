@@ -711,6 +711,7 @@ void	TSKextend(int id)
 		case	0:
 			extend_score = 10000;
 			TskBuf[id].step++;
+			goto case;
 		case	1:
 			if(score >= extend_score){
 				flag++;
@@ -719,6 +720,7 @@ void	TSKextend(int id)
 			}else{
 				break;
 			}
+			goto case;
 		case	2:
 			if(score > extend_score){
 				flag++;
@@ -727,6 +729,7 @@ void	TSKextend(int id)
 			}else{
 				break;
 			}
+			goto case;
 		case	3:
 			if(score > extend_score){
 				flag++;

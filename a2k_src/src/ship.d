@@ -202,6 +202,7 @@ void	TSKship(int id)
 				TskBuf[id].wait--;
 				if(TskBuf[id].cnt) TskBuf[id].alpha += 1.0f / TskBuf[id].cnt;
 			}
+			goto case;
 		case	2:
 			old_dat = pad_dat;
 			pad_dat = getAttractPadData(id);
@@ -384,10 +385,12 @@ void	TSKship(int id)
 			TskBuf[id].ay = +0.0f;
 			TskBuf[id].rot = 0.0f;
 			TskBuf[id].step++;
+			goto case;
 		case	101:
 			BombOFF();
 			cmd.vanish();
 			TskBuf[id].step++;
+			goto case;
 		case	102:
 			/* 座標更新 */
 			acc = ACC_RATE;
@@ -460,7 +463,7 @@ void	TSKship(int id)
 		default:
 			if(cmd){
 				cmd.vanish();
-				delete cmd;
+				destroy(cmd);
 				TskBuf[id].bullet_command = null;
 			}
 			clrTSK(id);
@@ -568,7 +571,7 @@ void	TSKshipExit(int id)
 	TskBuf[id].body_list.length = 0;
 	TskBuf[id].body_ang.length  = 0;
 	if(cmd){
-		delete cmd;
+		destroy(cmd);
 		TskBuf[id].bullet_command = null;
 	}
 }
@@ -589,7 +592,7 @@ float	getShipShotDirection(int id)
 
 void	TSKsshotSimple(int id)
 {
-	double	tpos[XY];
+	double[XY]	tpos;
 
 	switch(TskBuf[id].step){
 		case	0:
@@ -686,7 +689,7 @@ void	TSKsshotActive(int id)
 		default:
 			if(cmd){
 				cmd.vanish();
-				delete cmd;
+				destroy(cmd);
 				TskBuf[id].bullet_command = null;
 			}
 			clrTSK(id);
@@ -742,7 +745,7 @@ void	TSKsshotExit(int id)
 	TskBuf[id].body_list.length = 0;
 	TskBuf[id].body_ang.length  = 0;
 	if(cmd){
-		delete cmd;
+		destroy(cmd);
 		TskBuf[id].bullet_command = null;
 	}
 }

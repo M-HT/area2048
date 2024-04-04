@@ -242,7 +242,7 @@ void	TSKboss01(int id)
 		default:
 			if(cmd){
 				cmd.vanish();
-				delete cmd;
+				destroy(cmd);
 				TskBuf[id].bullet_command = null;
 			}
 			clrTSK(id);
@@ -288,7 +288,7 @@ void	TSKboss01Int(int id)
 		TskBuf[id].wait = 180;
 		if(cmd){
 			cmd.vanish();
-			delete cmd;
+			destroy(cmd);
 			TskBuf[id].bullet_command = null;
 		}
 	}else{
@@ -366,7 +366,7 @@ void	TSKboss01Exit(int id)
 	TskBuf[id].line_list.length = 0;
 	TskBuf[id].line_ang.length  = 0;
 	if(cmd){
-		delete cmd;
+		destroy(cmd);
 		TskBuf[id].bullet_command = null;
 	}
 }
@@ -493,7 +493,7 @@ void	TSKOption01Int(int id)
 		}
 		if(cmd){
 			cmd.vanish();
-			delete cmd;
+			destroy(cmd);
 			TskBuf[id].bullet_command = null;
 		}
 	}else{
@@ -548,7 +548,7 @@ void	TSKOption01Exit(int id)
 	TskBuf[id].line_list.length = 0;
 	TskBuf[id].line_ang.length  = 0;
 	if(cmd){
-		delete cmd;
+		destroy(cmd);
 		TskBuf[id].bullet_command = null;
 	}
 }

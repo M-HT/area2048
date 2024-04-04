@@ -43,7 +43,7 @@ version (PANDORA) {
     // these functions work, because the projection and modelview matrices are identity matrices
     private bool isOutside(ref GLfloat[] vertices) {
         int numVertices = cast(int)(vertices.length / XYZ);
-        bool outside[4] = true;
+        bool[4] outside = true;
         foreach(i; 0..numVertices) {
             if (vertices[3*i + 0] <= 1.0f) outside[0] = false;
             if (vertices[3*i + 0] >= -1.0f) outside[1] = false;

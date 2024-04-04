@@ -105,6 +105,7 @@ void	TSKenemy02(int id)
 				TskBuf[id].alpha = 1.0f;
 				TskBuf[id].step++;
 			}
+			goto case;
 		case	2:
 			/* 移動モード更新 */
 			if(!TskBuf[id].mov_cnt){
@@ -161,7 +162,7 @@ void	TSKenemy02(int id)
 		default:
 			if(cmd){
 				cmd.vanish();
-				delete cmd;
+				destroy(cmd);
 				TskBuf[id].bullet_command = null;
 			}
 			clrTSK(id);
@@ -241,5 +242,5 @@ void	TSKenemy02Exit(int id)
 
 	TskBuf[id].body_list.length = 0;
 	TskBuf[id].body_ang.length  = 0;
-	if(TskBuf[id].bullet_command) delete TskBuf[id].bullet_command;
+	if(TskBuf[id].bullet_command) destroy(TskBuf[id].bullet_command);
 }

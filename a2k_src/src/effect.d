@@ -505,6 +505,7 @@ void	TSKfadeAlpha(int id)
 		case	2:
 			if(TskBuf[id].wait) TskBuf[id].vx = (TskBuf[id].tx - fade_a) / cast(float)TskBuf[id].wait;
 			TskBuf[id].step++;
+			goto case;
 		case	3:
 			if(TskBuf[id].wait){
 				fade_a += TskBuf[id].vx;
@@ -574,6 +575,7 @@ void	TSKfade(int id)
 		case	2:
 			if(TskBuf[id].wait) TskBuf[id].vx = (TskBuf[id].tx - fade_a) / cast(float)TskBuf[id].wait;
 			TskBuf[id].step++;
+			goto case;
 		case	3:
 			if(TskBuf[id].wait){
 				fade_a += TskBuf[id].vx;
