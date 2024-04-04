@@ -106,6 +106,7 @@ void	TSKenemy07(int id)
 				TskBuf[id].alpha = 1.0f;
 				TskBuf[id].step++;
 			}
+			goto case;
 		case	2:
 			/* 弾撃ち */
 			if(cmd){
@@ -178,7 +179,7 @@ void	TSKenemy07(int id)
 		default:
 			if(cmd){
 				cmd.vanish();
-				delete cmd;
+				destroy(cmd);
 				TskBuf[id].bullet_command = null;
 			}
 			clrTSK(id);
@@ -345,7 +346,7 @@ void	TSKenemy07Exit(int id)
 	TskBuf[id].body_list.length = 0;
 	TskBuf[id].body_ang.length  = 0;
 	if(cmd){
-		delete cmd;
+		destroy(cmd);
 		TskBuf[id].bullet_command = null;
 	}
 }

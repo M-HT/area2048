@@ -93,7 +93,7 @@ private	void	writeScore()
 	scope File fd;
 	try {
 		fd.open("score.dat", "wb");
-		int write_data[3] = [high_easy, high_normal, high_hard];
+		int[3] write_data = [high_easy, high_normal, high_hard];
 		fd.rawWrite(write_data);
 	} finally {
 		fd.close();
@@ -105,7 +105,7 @@ private	void	writeConfig()
 	scope File fd;
 	try {
 		fd.open("config.dat", "wb");
-		int write_data[3] = [pad_type, vol_se, vol_music];
+		int[3] write_data = [pad_type, vol_se, vol_music];
 		fd.rawWrite(write_data);
 	} finally {
 		fd.close();
@@ -122,7 +122,7 @@ private	void	readScore()
 			writeScore();
 			return;
 		}
-		int read_data[3];
+		int[3] read_data;
 		fd.rawRead(read_data);
 		high_easy = read_data[0];
 		high_normal = read_data[1];
@@ -144,7 +144,7 @@ private	void	readConfig()
 			writeConfig();
 			return;
 		}
-		int read_data[3];
+		int[3] read_data;
 		fd.rawRead(read_data);
 		version (PANDORA) {
 			pad_type = 0;

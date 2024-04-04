@@ -187,7 +187,7 @@ void	TSKboss03(int id)
 		default:
 			if(cmd){
 				cmd.vanish();
-				delete cmd;
+				destroy(cmd);
 				TskBuf[id].bullet_command = null;
 			}
 			clrTSK(id);
@@ -227,7 +227,7 @@ void	TSKboss03Int(int id)
 		TskBuf[id].wait = 180;
 		if(cmd){
 			cmd.vanish();
-			delete cmd;
+			destroy(cmd);
 			TskBuf[id].bullet_command = null;
 		}
 	}else{
@@ -275,7 +275,7 @@ void	TSKboss03Exit(int id)
 	TskBuf[id].body_list.length = 0;
 	TskBuf[id].body_ang.length  = 0;
 	if(cmd){
-		delete cmd;
+		destroy(cmd);
 		TskBuf[id].bullet_command = null;
 	}
 }
@@ -358,7 +358,8 @@ void	TSKOption03(int id)
 			}
 			if(!cmd.isEnd()) cmd.run();
 			break;
-			TskBuf[id].ang_x  = Rand() % 65536;
+			// dead code
+			/*TskBuf[id].ang_x  = Rand() % 65536;
 			TskBuf[id].ang_x *= PI / 65536.0f;
 			TskBuf[id].ax =
 			TskBuf[id].ay = sin(TskBuf[id].ang_x) * 5.0f / PI;
@@ -379,7 +380,7 @@ void	TSKOption03(int id)
 			if(fabs(TskBuf[id].vx) > 1.5f){
 				TskBuf[id].vx = 1.5f;
 				TskBuf[id].vy = 1.5f;
-			}
+			}*/
 		case	10:
 			if(TskBuf[id].wait) TskBuf[id].wait--;
 			else				TskBuf[id].step = -1;
@@ -419,7 +420,7 @@ void	TSKOption03Int(int id)
 		}
 		if(cmd){
 			cmd.vanish();
-			delete cmd;
+			destroy(cmd);
 			TskBuf[id].bullet_command = null;
 		}
 	}else{
@@ -469,7 +470,7 @@ void	TSKOption03Exit(int id)
 	TskBuf[id].line_list.length = 0;
 	TskBuf[id].line_ang.length  = 0;
 	if(cmd){
-		delete cmd;
+		destroy(cmd);
 		TskBuf[id].bullet_command = null;
 	}
 }

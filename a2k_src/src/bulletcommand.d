@@ -7,6 +7,7 @@
 */
 
 private	import	std.math;
+private	import	std.string;
 private	import	bulletml;
 private	import	main;
 private	import	task;

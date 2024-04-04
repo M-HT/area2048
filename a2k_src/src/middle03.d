@@ -161,7 +161,7 @@ void	TSKmiddle03(int id)
 		default:
 			if(cmd){
 				cmd.vanish();
-				delete cmd;
+				destroy(cmd);
 				TskBuf[id].bullet_command = null;
 			}
 			clrTSK(id);
@@ -184,7 +184,7 @@ void	TSKmiddle03Int(int id)
 		TskBuf[id].fp_int = null;
 		if(cmd){
 			cmd.vanish();
-			delete cmd;
+			destroy(cmd);
 			TskBuf[id].bullet_command = null;
 		}
 		addScore(50);
@@ -331,7 +331,7 @@ void	TSKmiddle03Exit(int id)
 	TskBuf[id].line_list.length = 0;
 	TskBuf[id].line_ang.length  = 0;
 	if(cmd){
-		delete cmd;
+		destroy(cmd);
 		TskBuf[id].bullet_command = null;
 	}
 }
