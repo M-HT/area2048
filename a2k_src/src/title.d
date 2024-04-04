@@ -27,9 +27,23 @@ private	int		menu_max = 4;
 private	int		menu_now;
 private	int		option_max = 3;
 private	int		option_now;
+version (PANDORA) {
+	private	int		option_min = 1;
+} else {
+	private	int		option_min = 0;
+}
+
+bool ignorekeys = false;
+uint ignoretime;
 
 void	TSKtitle(int id)
 {
+	if (ignorekeys) {
+		if (SDL_GetTicks() - ignoretime > 100) {
+			ignorekeys = false;
+		}
+	}
+
 	switch(TskBuf[id].step){
 		case	0:
 			str_buf.length = 256;
@@ -70,13 +84,17 @@ void	TSKtitle(int id)
 				playSNDse(SND_SE_CORRECT);
 				MENUmodeSet(id);
 			}
-			if((reps & PAD_UP)){
+			if((reps & PAD_UP) && !ignorekeys){
 				playSNDse(SND_SE_CURSOLE);
 				menu_now--;
+				ignorekeys = true;
+				ignoretime = SDL_GetTicks();
 			}
-			if((reps & PAD_DOWN)){
+			if((reps & PAD_DOWN) && !ignorekeys){
 				playSNDse(SND_SE_CURSOLE);
 				menu_now++;
+				ignorekeys = true;
+				ignoretime = SDL_GetTicks();
 			}
 			if(menu_now < 0) menu_now = menu_max;
 			if(menu_now > menu_max) menu_now = 0;
@@ -88,16 +106,20 @@ void	TSKtitle(int id)
 				configSAVE();
 			}
 			MENUoptionSet(id);
-			if((reps & PAD_UP)){
+			if((reps & PAD_UP) && !ignorekeys){
 				playSNDse(SND_SE_CURSOLE);
 				option_now--;
+				ignorekeys = true;
+				ignoretime = SDL_GetTicks();
 			}
-			if((reps & PAD_DOWN)){
+			if((reps & PAD_DOWN) && !ignorekeys){
 				playSNDse(SND_SE_CURSOLE);
 				option_now++;
+				ignorekeys = true;
+				ignoretime = SDL_GetTicks();
 			}
-			if(option_now < 0) option_now = option_max;
-			if(option_now > option_max) option_now = 0;
+			if(option_now < option_min) option_now = option_max;
+			if(option_now > option_max) option_now = option_min;
 			break;
 		case	5:
 			g_step = GSTEP_DEMO;
@@ -256,10 +278,13 @@ void	TSKtitleDraw(int id)
 			pos[X]  = -getWidthASCII(str_buf, 0.5f);
 			pos[X] /= 2.0f;
 			pos[X]  = ceil(pos[X]);
-			DrawOptionColor(0);
-			str_buf = "KEY TYPE TYPE-".dup ~ to!string(pad_type+1);
-			pos[Y]  = -40.0f - 12.0f * 1;
-			drawASCII(str_buf, pos[X], pos[Y], 0.5f);
+			version (PANDORA) {
+			} else {
+				DrawOptionColor(0);
+				str_buf = "KEY TYPE TYPE-".dup ~ to!string(pad_type+1);
+				pos[Y]  = -40.0f - 12.0f * 1;
+				drawASCII(str_buf, pos[X], pos[Y], 0.5f);
+			}
 			DrawOptionColor(1);
 			str_buf = "BGM VOLUME ".dup ~ to!string(vol_music);
 			pos[Y]  = -40.0f - 12.0f * 2;
@@ -427,7 +452,7 @@ void	MENUmodeSet(int id)
 			TskBuf[id].step = -1;
 			break;
 		case	3:
-			option_now = 0;
+			option_now = option_min;
 			TskBuf[id].step++;
 			break;
 		case	4:

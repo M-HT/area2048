@@ -238,7 +238,7 @@ void	TSKbg01(int id)
 						}else{
 							bg_obj[i].pos[X] = 0.0f;
 							bg_obj[i].pos[Y] = cast(float)(Rand() % 4096) - 2048.0f;
-							bg_obj[i].line_list.length = 4;
+							bg_obj[i].line_list.length = 2;
 							bg_obj[i].line_list[0][X] = -2048.0f;
 							bg_obj[i].line_list[0][Y] = +0.0f;
 							bg_obj[i].line_list[1][X] = +2048.0f;
