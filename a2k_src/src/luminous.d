@@ -17,7 +17,7 @@ private	const int	LUMINOUS_TEXTURE_WIDTH_MAX = 64;
 private	const int	LUMINOUS_TEXTURE_HEIGHT_MAX = 64;
 private	GLuint[LUMINOUS_TEXTURE_WIDTH_MAX * LUMINOUS_TEXTURE_HEIGHT_MAX * 4 * uint.sizeof]	td;
 private	int			luminousTextureWidth = 64, luminousTextureHeight = 64;
-private	int			screenWidth, screenHeight;
+private	int			screenWidth, screenHeight, screenStartx, screenStarty;
 private	float		luminous;
 
 private	int[2][5]	lmOfs = [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]];
@@ -37,7 +37,7 @@ void	TSKluminous(int id)
 		    glDisable(GL_TEXTURE_2D);
 		    glDisable(GL_COLOR_MATERIAL);
 			//init(0.0f,640,480);
-			init(0.0f,SCREEN_X,SCREEN_Y);
+			init(0.0f,util_sdl.startx, util_sdl.starty, SCREEN_X,SCREEN_Y);
 			TskBuf[id].fp_draw = &TSKluminousDraw;
 			TskBuf[id].step++;
 			break;
@@ -60,10 +60,12 @@ void	TSKluminousDraw(int id)
 
 /*----------------------------------------------------------------------------*/
 
-static	void	init(float lumi, int width, int height)
+static	void	init(float lumi, int startx, int starty, int width, int height)
 {
 	makeLuminousTexture();
 	luminous = lumi;
+	screenStartx = startx;
+	screenStarty = starty;
 	resized(width, height);
 }
 
@@ -76,7 +78,7 @@ static	void	makeLuminousTexture()
 	td[0..$] = 0;
 	glGenTextures(1, &luminousTexture);
 	glBindTexture(GL_TEXTURE_2D, luminousTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, luminousTextureWidth, luminousTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, luminousTextureWidth, luminousTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
@@ -102,7 +104,7 @@ static	void	endRenderToTexture()
 	glBindTexture(GL_TEXTURE_2D, luminousTexture);
 	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, luminousTextureWidth, luminousTextureHeight, 0);
 	//glViewport(0, 0, screenWidth, screenHeight);
-	glViewport((SCREEN_X / 2) - screenWidth / 2, (SCREEN_Y / 2) - screenHeight / 2, screenWidth, screenHeight);
+	glViewport(screenStartx + (SCREEN_X / 2) - screenWidth / 2, screenStarty + (SCREEN_Y / 2) - screenHeight / 2, screenWidth, screenHeight);
 }
 
 static	void	viewOrtho()

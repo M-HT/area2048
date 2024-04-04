@@ -42,6 +42,8 @@ float		cam_pos;
 
 private	int		width = SCREEN_X;
 private	int		height = SCREEN_Y;
+public	int		startx = 0;
+public	int		starty = 0;
 private	float	nearPlane = 0.0f;
 private	float	farPlane = 1000.0f;
 
@@ -49,7 +51,7 @@ private	GLuint[]	tex_bank;
 
 int		initSDL()
 {
-	if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK) < 0){
+	if(SDL_Init(SDL_INIT_VIDEO) < 0){
 		return	0;
     }
 
@@ -57,13 +59,25 @@ int		initSDL()
 	//videoFlags = SDL_OPENGL | SDL_FULLSCREEN;
 	videoFlags = SDL_OPENGL;
 	//videoFlags = SDL_OPENGL | SDL_RESIZABLE;
-	debug{
-		videoFlags = SDL_OPENGL | SDL_RESIZABLE;
+	version (PANDORA) {
+		videoFlags |= SDL_FULLSCREEN;
+	} else {
+		debug{
+			videoFlags |= SDL_RESIZABLE;
+		}
 	}
-	primary = SDL_SetVideoMode(width, height, 0, videoFlags);
+	int physical_width = width;
+	int physical_height = height;
+	version (PANDORA) {
+		physical_width = 800;
+		physical_height = 480;
+		startx = (800 - width) / 2;
+		starty = (480 - height) / 2;
+	}
+	primary = SDL_SetVideoMode(physical_width, physical_height, 0, videoFlags);
 	if(primary == null){
 		return	0;
-    }
+	}
 
 	offscreen.length = SURFACE_MAX;
 	tex_bank.length  = SURFACE_MAX;
@@ -106,7 +120,7 @@ void	readSDLtexture(const char[] fname, int bank)
 	if(offscreen[bank]){
 		glGenTextures(1, &tex_bank[bank]);
 		glBindTexture(GL_TEXTURE_2D, tex_bank[bank]);
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, offscreen[bank].w, offscreen[bank].h, 0, GL_RGB, GL_UNSIGNED_BYTE, offscreen[bank].pixels);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, offscreen[bank].w, offscreen[bank].h, 0, GL_RGB, GL_UNSIGNED_BYTE, offscreen[bank].pixels);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 	}
@@ -134,13 +148,15 @@ void	flipSDL()
 
 void	resizedSDL(int w, int h)
 {
-	glViewport(0, 0, w, h);
+	glViewport(startx, starty, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glFrustum(-nearPlane,nearPlane,
-			  -nearPlane * h / w,
-			   nearPlane * h / w,
-			  0.1f, farPlane);
+	if (nearPlane != 0.0f) {
+		glFrustum(-nearPlane,nearPlane,
+				  -nearPlane * h / w,
+				   nearPlane * h / w,
+				  0.1f, farPlane);
+	}
 	glMatrixMode(GL_MODELVIEW);
 }
 
