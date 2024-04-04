@@ -10,7 +10,7 @@ private	import	std.stdio;
 private	import	std.math;
 private	import	std.string;
 private	import	std.conv;
-private	import	SDL;
+private	import	bindbc.sdl;
 private	import	opengl;
 private	import	util_sdl;
 private	import	util_pad;
@@ -22,12 +22,15 @@ private	import	task;
 private	import	main;
 private	import	gctrl;
 
+version(PANDORA) version = PANDORA_OR_PYRA;
+version(PYRA) version = PANDORA_OR_PYRA;
+
 private	char[]	str_buf;
 private	int		menu_max = 4;
 private	int		menu_now;
 private	int		option_max = 3;
 private	int		option_now;
-version (PANDORA) {
+version (PANDORA_OR_PYRA) {
 	private	int		option_min = 1;
 } else {
 	private	int		option_min = 0;
@@ -282,7 +285,7 @@ version (PANDORA) {
 			pos[X]  = -getWidthASCII(str_buf, 0.5f);
 			pos[X] /= 2.0f;
 			pos[X]  = ceil(pos[X]);
-			version (PANDORA) {
+			version (PANDORA_OR_PYRA) {
 			} else {
 				DrawOptionColor(0);
 				str_buf = "KEY TYPE TYPE-".dup ~ to!string(pad_type+1);

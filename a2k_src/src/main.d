@@ -11,7 +11,7 @@ version (Windows) {
 }
 private	import	std.random;
 private	import	core.stdc.stdio;
-private	import	SDL;
+private	import	bindbc.sdl;
 private	import	opengl;
 private	import	util_sdl;
 private	import	util_pad;
@@ -124,7 +124,7 @@ int		boot()
 	while(game_exec){
 		SDL_PollEvent(&event);
 		getPAD();
-		if(util_pad.keys[SDLK_ESCAPE] == SDL_PRESSED || event.type == SDL_QUIT){
+		if(util_pad.keys[SDL_SCANCODE_ESCAPE] == SDL_PRESSED || event.type == SDL_QUIT){
 			game_exec = 0;
 		}
 		nowTick = SDL_GetTicks();

@@ -14,6 +14,9 @@ private	import	bulletcommand;
 private	import	define;
 private	import	gctrl;
 
+version(PANDORA) version = PANDORA_OR_PYRA;
+version(PYRA) version = PANDORA_OR_PYRA;
+
 void	grpINIT()
 {
 	readSDLtexture("title.bmp", GRP_TITLE);
@@ -146,7 +149,7 @@ private	void	readConfig()
 		}
 		int[3] read_data;
 		fd.rawRead(read_data);
-		version (PANDORA) {
+		version (PANDORA_OR_PYRA) {
 			pad_type = 0;
 		} else {
 			pad_type = read_data[0];
