@@ -122,9 +122,13 @@ int		boot()
 	setTSK(GROUP_00,&TSKgctrl);
 
 	while(game_exec){
-		SDL_PollEvent(&event);
+		while (game_exec && SDL_PollEvent(&event)){
+			if(event.type == SDL_QUIT){
+				game_exec = 0;
+			}
+		}
 		getPAD();
-		if(util_pad.keys[SDL_SCANCODE_ESCAPE] == SDL_PRESSED || event.type == SDL_QUIT){
+		if(util_pad.keys[SDL_SCANCODE_ESCAPE] == SDL_PRESSED){
 			game_exec = 0;
 		}
 		nowTick = SDL_GetTicks();
